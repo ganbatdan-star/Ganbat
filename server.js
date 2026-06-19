@@ -16,6 +16,10 @@ const PUBLIC_URL = process.env.SITE_URL
 const DATA_FILE = path.join(__dirname, 'applications.json');
 const PHOTOS_DIR = path.join(__dirname, 'photos');
 
+// Файл, директор байхгүй бол үүсгэнэ
+if (!fs.existsSync(PHOTOS_DIR)) fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '[]', 'utf8');
+
 // HR нууц үг — Railway Variables дээр HR_PASSWORD тохируулна
 const HR_PASSWORD = process.env.HR_PASSWORD || 'kfc2026';
 
