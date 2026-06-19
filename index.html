@@ -37,13 +37,18 @@
     .hr-link a { color: #c8102e; }
     .top-fields { display: flex; gap: 12px; flex-wrap: wrap; }
     .top-fields .field { flex: 1; min-width: 150px; }
-    @media (max-width: 600px) {
-      body { padding: 8px; }
-      .card { padding: 16px; border-radius: 6px; }
+    @media (max-width: 640px) {
+      body { padding: 6px; }
+      .card { padding: 14px; border-radius: 6px; }
+      .row { flex-direction: column; gap: 0; }
       .row .field { min-width: 100%; }
+      .top-fields { flex-direction: column; gap: 0; }
       .top-fields .field { min-width: 100%; }
       .radio-group { gap: 12px; }
       input, select, textarea { font-size: 16px; }
+      .table-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { min-width: 480px; }
+      td input, td select { font-size: 14px; min-width: 80px; }
     }
   </style>
 </head>
