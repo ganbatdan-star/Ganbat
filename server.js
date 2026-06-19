@@ -182,16 +182,16 @@ const server = http.createServer((req, res) => {
     const search = (urlObj.searchParams.get('search') || '').toLowerCase();
     const filterType = urlObj.searchParams.get('type') || '';
 
-    let data = readData();
+    const all = readData();
+    const officeCount = all.filter(a => a.position_type === 'Оффис').length;
+    const branchCount = all.filter(a => a.position_type === 'Салбар').length;
+
+    let data = all.map((a, i) => ({ ...a, _origIndex: i }));
     if (search) data = data.filter(a =>
       (`${a.last_name} ${a.first_name} ${a.name}`).toLowerCase().includes(search) ||
       (a.phone || '').includes(search) || (a.email || '').toLowerCase().includes(search)
     );
     if (filterType) data = data.filter(a => a.position_type === filterType);
-
-    const all = readData();
-    const officeCount = all.filter(a => a.position_type === 'Оффис').length;
-    const branchCount = all.filter(a => a.position_type === 'Салбар').length;
 
     const rows = data.map((app, i) => {
       const name = `${app.last_name || ''} ${app.first_name || app.name || ''}`.trim();
@@ -207,7 +207,7 @@ const server = http.createServer((req, res) => {
         <td><span style="background:${app.position_type==='Оффис'?'#dbeafe':'#dcfce7'};color:${app.position_type==='Оффис'?'#1d4ed8':'#166534'};padding:2px 10px;border-radius:12px;font-size:12px">${app.position_type || '-'}</span></td>
         <td>${pos}</td>
         <td style="color:#888;font-size:13px">${app.date || '-'}</td>
-        <td><a href="/detail/${all.indexOf(app)}" style="color:#c8102e;font-size:13px">Харах →</a></td>
+        <td><a href="/detail/${app._origIndex}" style="color:#c8102e;font-size:13px">Харах →</a></td>
       </tr>`;
     }).join('');
 
