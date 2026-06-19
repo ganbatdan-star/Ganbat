@@ -729,6 +729,24 @@ function prevStep(step) {
   showStep(step - 1);
 }
 
+function markField(name, hasError) {
+  var el = document.getElementById(name) || document.querySelector('[name="'+name+'"]');
+  if (!el) return;
+  el.style.borderColor = hasError ? '#c8102e' : '#ddd';
+  var hint = el.parentNode.querySelector('.field-err');
+  if (hasError) {
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.className = 'field-err';
+      hint.style.cssText = 'color:#c8102e;font-size:12px;margin-top:3px';
+      el.parentNode.appendChild(hint);
+    }
+    hint.textContent = '⚠ Заавал бөглөнө үү';
+  } else if (hint) {
+    hint.remove();
+  }
+}
+
 function validateStep(step) {
   // Step 0: зураг заавал
   if (step === 0) {
@@ -741,21 +759,53 @@ function validateStep(step) {
   // Step 1: ажлын байр
   if (step === 1) {
     var type = document.getElementById('position_type').value;
-    if (!type) { showErr('err1'); return false; }
-    if (type === 'Оффис' && !document.getElementById('select-office').value) { showErr('err1'); return false; }
-    if (type === 'Салбар' && !document.getElementById('select-branch').value) { showErr('err1'); return false; }
+    if (!type) {
+      document.getElementById('err1').textContent = '⚠ Оффис эсвэл Салбар гэдгийг сонгоно уу';
+      showErr('err1'); return false;
+    }
+    if (type === 'Оффис' && !document.getElementById('select-office').value) {
+      document.getElementById('err1').textContent = '⚠ Оффисын ажлын байрыг сонгоно уу';
+      showErr('err1'); return false;
+    }
+    if (type === 'Салбар' && !document.getElementById('select-branch').value) {
+      document.getElementById('err1').textContent = '⚠ Салбарын ажлын байрыг сонгоно уу';
+      showErr('err1'); return false;
+    }
     hideErr('err1'); return true;
   }
   // Step 2: үндсэн мэдээлэл
   if (step === 2) {
-    var ok = val('last_name') && val('first_name') && val('birthdate') && val('email') && val('phone');
+    var missing = [];
+    var fields = [
+      ['last_name', 'Эцгийн нэр'],
+      ['first_name', 'Өөрийн нэр'],
+      ['birthdate', 'Төрсөн огноо'],
+      ['email', 'Имэйл'],
+      ['phone', 'Гар утас']
+    ];
+    fields.forEach(function(f) {
+      var el = document.getElementById(f[0]) || document.querySelector('[name="'+f[0]+'"]');
+      var empty = !el || !el.value.trim();
+      markField(f[0], empty);
+      if (empty) missing.push(f[1]);
+    });
     var gender = document.querySelector('input[name="gender"]:checked');
-    if (!ok || !gender) { showErr('err2'); return false; }
+    if (!gender) missing.push('Хүйс');
+    if (missing.length > 0) {
+      document.getElementById('err2').textContent = '⚠ Дутуу талбар: ' + missing.join(', ');
+      showErr('err2'); return false;
+    }
     hideErr('err2'); return true;
   }
-  // Step 3: боловсрол — дор хаяж нэг сургуулийн нэр
+  // Step 3: боловсрол
   if (step === 3) {
-    if (!document.querySelector('input[name="edu1_school"]').value.trim()) { showErr('err3'); return false; }
+    var s = document.querySelector('input[name="edu1_school"]');
+    if (!s || !s.value.trim()) {
+      s.style.borderColor = '#c8102e';
+      document.getElementById('err3').textContent = '⚠ Дор хаяж нэг сургуулийн нэрийг бөглөнө үү';
+      showErr('err3'); return false;
+    }
+    s.style.borderColor = '#ddd';
     hideErr('err3'); return true;
   }
   return true;
