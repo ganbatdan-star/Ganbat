@@ -8,10 +8,10 @@ const crypto = require('crypto');
 // Railway PORT орчны хувьсагчаас уншина, байхгүй бол 3000
 const PORT = process.env.PORT || 3000;
 
-// Railway тогтмол домэйн (deploy хийсний дараа автоматаар тохируулагдана)
-const PUBLIC_URL = process.env.RAILWAY_PUBLIC_DOMAIN
-  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-  : null;
+// Railway тогтмол домэйн
+const PUBLIC_URL = process.env.SITE_URL
+  || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null)
+  || 'https://kfcresume.up.railway.app';
 
 const DATA_FILE = path.join(__dirname, 'applications.json');
 const PHOTOS_DIR = path.join(__dirname, 'photos');
