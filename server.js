@@ -281,21 +281,96 @@ const server = http.createServer((req, res) => {
     if (!app) { res.writeHead(404); res.end('Олдсонгүй'); return; }
     const name = `${app.last_name || ''} ${app.first_name || app.name || ''}`.trim();
     const photo = app.photo
-      ? `<img src="/photos/${app.photo}" style="width:110px;height:110px;object-fit:cover;border-radius:8px;border:3px solid #eee;">`
-      : `<div style="width:110px;height:110px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:44px;">👤</div>`;
-    const rows = Object.entries(app).filter(([k]) => k !== 'photo')
-      .map(([k, v]) => `<tr><td style="color:#888;font-size:13px;padding:8px 12px;white-space:nowrap;background:#fafafa">${k}</td><td style="padding:8px 12px">${v || '-'}</td></tr>`).join('');
+      ? `<img src="/photos/${app.photo}" style="width:100px;height:100px;object-fit:cover;border-radius:50%;border:3px solid #c8102e;">`
+      : `<div style="width:100px;height:100px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:40px;">👤</div>`;
+    const pos = app.position || app.position_branch || '-';
+    const typeColor = app.position_type === 'Оффис' ? '#dbeafe' : '#dcfce7';
+    const typeText = app.position_type === 'Оффис' ? '#1d4ed8' : '#166534';
+    function row(label, val) {
+      if (!val || val === '-') return '';
+      return `<tr><td style="color:#888;font-size:12px;padding:5px 10px;white-space:nowrap;width:40%">${label}</td><td style="padding:5px 10px;font-size:13px">${val}</td></tr>`;
+    }
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(`<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>${name}</title>
-<style>body{font-family:Arial;background:#f5f5f5;padding:28px}.card{background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);max-width:680px;margin:0 auto;padding:28px}.top{display:flex;gap:20px;align-items:flex-start;margin-bottom:20px}h2{margin:0 0 4px;color:#c8102e}table{width:100%;border-collapse:collapse}tr:nth-child(even) td{background:#fafafa}a{color:#c8102e}</style>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${name}</title>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:16px}
+.card{background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);max-width:760px;margin:0 auto}
+.header{background:#c8102e;padding:20px;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:16px}
+.header h2{margin:0 0 4px;color:white;font-size:18px}
+.header p{margin:2px 0;color:rgba(255,255,255,0.85);font-size:13px}
+.badge{display:inline-block;background:rgba(255,255,255,0.2);color:white;padding:2px 10px;border-radius:10px;font-size:11px;margin-top:4px}
+.body{padding:16px}
+.section{margin-bottom:12px}
+.section-title{font-size:11px;font-weight:bold;color:#c8102e;text-transform:uppercase;letter-spacing:0.5px;padding:6px 0 4px;border-bottom:1px solid #f0f0f0;margin-bottom:4px}
+table{width:100%;border-collapse:collapse}
+tr:nth-child(even) td{background:#fafafa}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+a{color:#c8102e;text-decoration:none;font-size:13px}
+.back{display:inline-block;margin-bottom:12px;padding:6px 14px;background:#c8102e;color:white;border-radius:6px;font-size:13px}
+@media print{.back{display:none}body{padding:0}.card{box-shadow:none}}
+</style>
 </head>
 <body>
+<a href="/hr" class="back">← Буцах</a>
 <div class="card">
-  <div class="top">${photo}<div><h2>${name}</h2><p style="margin:4px 0;color:#555">${app.position || app.position_branch || ''}</p><p style="margin:4px 0;font-size:12px;color:#999">${app.date || ''}</p></div></div>
-  <table>${rows}</table>
-  <br><a href="/hr">← Буцах</a>
+  <div class="header">
+    ${photo}
+    <div>
+      <h2>${name}</h2>
+      <p>${pos}</p>
+      <p>${app.phone || ''} &nbsp;|&nbsp; ${app.email || ''}</p>
+      <span class="badge">${app.position_type || ''} &nbsp;|&nbsp; ${app.date || ''}</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="section">
+      <div class="section-title">Үндсэн мэдээлэл</div>
+      <table>
+        ${row('Регистр', app.register_id)}
+        ${row('Төрсөн огноо', app.birthdate)}
+        ${row('Хүйс', app.gender)}
+        ${row('Аймаг/Хот', app.city)}
+        ${row('Дүүрэг', app.district)}
+        ${row('Хороо', app.khoroo)}
+        ${row('Хаяг', app.address)}
+        ${row('Гэрийн утас', app.home_phone)}
+        ${row('Яаралтай холбоо', (app.emergency_phone||'') + (app.emergency_contact ? ' ('+app.emergency_contact+')' : ''))}
+        ${row('Жолооны үнэмлэх', app.has_license === 'Тийм' ? 'Тийм — ' + (app.license_class||'') : app.has_license)}
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Хандаж буй ажлын байр</div>
+      <table>
+        ${row('Төрөл', app.position_type)}
+        ${row('Ажлын байр', pos)}
+        ${row('Бусад', app.other_position)}
+        ${row('Хүсч буй цалин', app.min_salary)}
+        ${row('Ажилд орох огноо', app.start_date)}
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Боловсрол</div>
+      <table>
+        ${[1,2,3,4].map(i => app[`edu${i}_school`] ? row(app[`edu${i}_school`], `${app[`edu${i}_degree`]||''} ${app[`edu${i}_major`]||''} (${app[`edu${i}_start`]||''}-${app[`edu${i}_end`]||''})`) : '').join('')}
+        ${[1,2,3,4].map(i => app[`train${i}_topic`] ? row('Сургалт', `${app[`train${i}_topic`]} — ${app[`train${i}_org`]||''}`) : '').join('')}
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Ажлын туршлага</div>
+      <table>
+        ${[1,2,3,4,5,6].map(i => app[`work${i}_company`] ? row(app[`work${i}_company`], `${app[`work${i}_title`]||''} (${app[`work${i}_start`]||''}-${app[`work${i}_end`]||''})`) : '').join('')}
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Үр чадвар</div>
+      <table>
+        ${[1,2].map(i => app[`lang${i}_name`] ? row(app[`lang${i}_name`], `Бичих:${app[`lang${i}_write`]||'-'} Ярих:${app[`lang${i}_speak`]||'-'} Сонсох:${app[`lang${i}_listen`]||'-'} Унших:${app[`lang${i}_read`]||'-'}`) : '').join('')}
+        ${row('Олон улсын шалгалт', app.intl_exam === 'Тийм' ? (app.intl_exam_name||'') + ' — ' + (app.intl_exam_score||'') : '')}
+      </table>
+    </div>
+  </div>
 </div>
 </body></html>`);
 
