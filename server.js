@@ -4,7 +4,6 @@ const path = require('path');
 const os = require('os');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
-const XLSX = require('xlsx');
 
 // Railway PORT орчны хувьсагчаас уншина, байхгүй бол 3000
 const PORT = process.env.PORT || 3000;
@@ -376,47 +375,40 @@ a{color:#c8102e;text-decoration:none;font-size:13px}
 </div>
 </body></html>`);
 
-  // Excel export
+  // CSV export (Excel-д нээгддэг)
   } else if (req.method === 'GET' && req.url === '/export') {
     if (!isLoggedIn(req)) { res.writeHead(302, { 'Location': '/login' }); res.end(); return; }
     const data = readData();
-    const labels = {
-      date: 'Огноо', last_name: 'Эцгийн нэр', first_name: 'Өөрийн нэр',
-      birthdate: 'Төрсөн огноо', gender: 'Хүйс', register_id: 'Регистр',
-      phone: 'Гар утас', home_phone: 'Гэрийн утас', email: 'Имэйл',
-      city: 'Аймаг/Хот', district: 'Дүүрэг', khoroo: 'Хороо', address: 'Хаяг',
-      has_license: 'Жолооны үнэмлэх', license_class: 'Ангилал',
-      emergency_phone: 'Яаралтай утас', emergency_contact: 'Яаралтай холбоо (хэн)',
-      position_type: 'Ажлын байрны төрөл', position: 'Оффисын ажлын байр',
-      position_branch: 'Салбарын ажлын байр', other_position: 'Бусад ажлын байр',
-      min_salary: 'Хүсч буй цалин', start_date: 'Ажилд орох огноо',
-      edu1_school: 'Сургууль 1', edu1_degree: 'Зэрэг 1', edu1_major: 'Мэргэжил 1', edu1_start: 'Элссэн 1', edu1_end: 'Төгссөн 1',
-      edu2_school: 'Сургууль 2', edu2_degree: 'Зэрэг 2', edu2_major: 'Мэргэжил 2', edu2_start: 'Элссэн 2', edu2_end: 'Төгссөн 2',
-      train1_topic: 'Сургалт 1', train1_org: 'Байгууллага 1', train1_duration: 'Хугацаа 1',
-      train2_topic: 'Сургалт 2', train2_org: 'Байгууллага 2',
-      lang1_name: 'Хэл 1', lang1_write: 'Бичих 1', lang1_speak: 'Ярих 1', lang1_listen: 'Сонсох 1', lang1_read: 'Унших 1',
-      lang2_name: 'Хэл 2', lang2_write: 'Бичих 2', lang2_speak: 'Ярих 2', lang2_listen: 'Сонсох 2', lang2_read: 'Унших 2',
-      work1_company: 'Компани 1', work1_title: 'Албан тушаал 1', work1_start: 'Орсон 1', work1_end: 'Гарсан 1', work1_reason: 'Шалтгаан 1',
-      work2_company: 'Компани 2', work2_title: 'Албан тушаал 2', work2_start: 'Орсон 2', work2_end: 'Гарсан 2', work2_reason: 'Шалтгаан 2',
-      work3_company: 'Компани 3', work3_title: 'Албан тушаал 3', work3_start: 'Орсон 3', work3_end: 'Гарсан 3', work3_reason: 'Шалтгаан 3',
-    };
-    const keys = Object.keys(labels);
-    const rows = data.map(app => {
-      const row = {};
-      keys.forEach(k => { row[labels[k]] = app[k] || ''; });
-      return row;
-    });
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Анкетууд');
-    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-    const filename = `KFC_anketnuud_${new Date().toISOString().slice(0,10)}.xlsx`;
+    const cols = [
+      ['date','Огноо'],['last_name','Эцгийн нэр'],['first_name','Өөрийн нэр'],
+      ['birthdate','Төрсөн огноо'],['gender','Хүйс'],['phone','Гар утас'],
+      ['home_phone','Гэрийн утас'],['email','Имэйл'],['city','Аймаг/Хот'],
+      ['district','Дүүрэг'],['khoroo','Хороо'],['address','Хаяг'],
+      ['has_license','Жолооны үнэмлэх'],['license_class','Ангилал'],
+      ['emergency_phone','Яаралтай утас'],['emergency_contact','Яаралтай холбоо'],
+      ['position_type','Ажлын байрны төрөл'],['position','Оффисын ажлын байр'],
+      ['position_branch','Салбарын ажлын байр'],['other_position','Бусад ажлын байр'],
+      ['min_salary','Хүсч буй цалин'],['start_date','Ажилд орох огноо'],
+      ['edu1_school','Сургууль 1'],['edu1_degree','Зэрэг 1'],['edu1_major','Мэргэжил 1'],['edu1_start','Элссэн 1'],['edu1_end','Төгссөн 1'],
+      ['edu2_school','Сургууль 2'],['edu2_degree','Зэрэг 2'],['edu2_major','Мэргэжил 2'],
+      ['train1_topic','Сургалт 1'],['train1_org','Байгууллага 1'],
+      ['train2_topic','Сургалт 2'],['train2_org','Байгууллага 2'],
+      ['lang1_name','Хэл 1'],['lang1_write','Бичих 1'],['lang1_speak','Ярих 1'],
+      ['lang2_name','Хэл 2'],['lang2_write','Бичих 2'],['lang2_speak','Ярих 2'],
+      ['work1_company','Компани 1'],['work1_title','Албан тушаал 1'],['work1_start','Орсон 1'],['work1_end','Гарсан 1'],
+      ['work2_company','Компани 2'],['work2_title','Албан тушаал 2'],['work2_start','Орсон 2'],['work2_end','Гарсан 2'],
+      ['work3_company','Компани 3'],['work3_title','Албан тушаал 3'],
+    ];
+    function csvCell(v) { v = (v||'').replace(/"/g,'""'); return '"'+v+'"'; }
+    const header = cols.map(c => csvCell(c[1])).join(',');
+    const rows = data.map(app => cols.map(c => csvCell(app[c[0]]||'')).join(','));
+    const csv = '﻿' + [header, ...rows].join('\r\n');
+    const filename = `KFC_anketnuud_${new Date().toISOString().slice(0,10)}.csv`;
     res.writeHead(200, {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
-      'Content-Length': buf.length
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`
     });
-    res.end(buf);
+    res.end(csv);
 
   // Форм илгээх
   } else if (req.method === 'POST' && req.url === '/apply') {

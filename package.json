@@ -7,7 +7,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "qrcode": "^1.5.4",
-    "xlsx": "^0.18.5"
+    "qrcode": "^1.5.4"
   }
 }
