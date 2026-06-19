@@ -270,15 +270,9 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="field">
-      <label>1.5 Регистрийн дугаар *</label>
-      <input type="text" name="register_id" id="register_id" placeholder="АА00000000">
-    </div>
-    <div class="field">
-      <label>1.6 Имэйл *</label>
-      <input type="email" name="email" id="email" placeholder="example@gmail.com">
-    </div>
+  <div class="field">
+    <label>1.5 Имэйл *</label>
+    <input type="email" name="email" id="email" placeholder="example@gmail.com">
   </div>
   <div class="field">
     <label>1.7 Хаяг</label>
@@ -754,7 +748,7 @@ function validateStep(step) {
   }
   // Step 2: үндсэн мэдээлэл
   if (step === 2) {
-    var ok = val('last_name') && val('first_name') && val('birthdate') && val('register_id') && val('email') && val('phone');
+    var ok = val('last_name') && val('first_name') && val('birthdate') && val('email') && val('phone');
     var gender = document.querySelector('input[name="gender"]:checked');
     if (!ok || !gender) { showErr('err2'); return false; }
     hideErr('err2'); return true;
