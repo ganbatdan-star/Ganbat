@@ -5,727 +5,797 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KFC - Ажил горилогчийн анкет</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 16px; }
-    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
-    .logo { text-align: center; margin-bottom: 24px; }
-    .logo h1 { color: #c8102e; font-size: 1.8rem; margin: 0; }
-    .logo p { color: #666; margin: 4px 0 0; font-size: 14px; }
-    .section { border-top: 2px solid #c8102e; margin-top: 24px; padding-top: 14px; }
-    .section h2 { color: #c8102e; font-size: 14px; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .row .field { flex: 1; min-width: 140px; }
-    .field { margin-bottom: 12px; }
-    label { display: block; font-size: 13px; font-weight: bold; color: #444; margin-bottom: 4px; }
-    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-    input[type="radio"], input[type="checkbox"] { width: auto; padding: 0; border: none; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; min-height: 100vh; }
+    .header { background: #c8102e; padding: 16px 20px; text-align: center; }
+    .header h1 { color: white; font-size: 22px; }
+    .header p { color: rgba(255,255,255,0.85); font-size: 13px; margin-top: 2px; }
+
+    /* Progress */
+    .progress-wrap { background: white; padding: 12px 16px; border-bottom: 1px solid #eee; }
+    .progress-top { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px; }
+    .progress-bar { height: 6px; background: #f0f0f0; border-radius: 3px; }
+    .progress-fill { height: 6px; background: #c8102e; border-radius: 3px; transition: width 0.3s; }
+
+    .card { background: white; margin: 12px; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+    /* Step */
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-title { color: #c8102e; font-size: 16px; font-weight: bold; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #c8102e; }
+
+    /* Fields */
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: bold; color: #444; margin-bottom: 5px; }
+    input[type=text], input[type=email], input[type=tel], input[type=date], select, textarea {
+      width: 100%; padding: 11px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 15px; font-family: Arial;
+    }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #c8102e; }
+    input[type=radio], input[type=checkbox] { width: auto; padding: 0; border: none; margin: 0; }
     textarea { resize: vertical; min-height: 70px; }
-    .table-section { overflow-x: auto; margin-bottom: 14px; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-    th { background: #c8102e; color: white; padding: 8px; text-align: left; white-space: nowrap; }
-    td { padding: 6px; border: 1px solid #ddd; }
-    td input, td select { padding: 6px 8px; font-size: 14px; border: none; background: transparent; width: 100%; }
-    td input:focus, td select:focus { background: #fff8f8; border: 1px solid #c8102e; border-radius: 3px; }
-    .radio-group { display: flex; gap: 16px; align-items: center; padding: 9px 0; flex-wrap: wrap; }
-    .radio-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; }
-    .checkbox-group { display: flex; gap: 12px; flex-wrap: wrap; padding: 6px 0; }
-    .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; }
-    .note { font-size: 12px; color: #888; margin-bottom: 12px; }
-    .submit-btn { width: 100%; padding: 16px; background: #c8102e; color: white; border: none; border-radius: 4px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 24px; }
-    .submit-btn:hover { background: #a00d25; }
-    .hr-link { text-align: center; margin-top: 14px; font-size: 13px; color: #999; }
-    .hr-link a { color: #c8102e; }
-    .top-fields { display: flex; gap: 12px; flex-wrap: wrap; }
-    .top-fields .field { flex: 1; min-width: 150px; }
-    @media (max-width: 640px) {
-      body { padding: 6px; }
-      .card { padding: 14px; border-radius: 6px; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; }
+    .radio-group { display: flex; gap: 20px; align-items: center; padding: 8px 0; flex-wrap: wrap; }
+    .radio-group label { font-weight: normal; display: flex; align-items: center; gap: 6px; font-size: 15px; }
+    .checkbox-group { display: flex; gap: 14px; flex-wrap: wrap; padding: 6px 0; }
+    .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 6px; font-size: 14px; }
+    .note { font-size: 12px; color: #888; margin-bottom: 10px; }
+    .required-note { font-size: 11px; color: #c8102e; margin-bottom: 14px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 460px; }
+    th { background: #c8102e; color: white; padding: 8px 10px; text-align: left; white-space: nowrap; font-size: 12px; }
+    td { padding: 5px 6px; border: 1px solid #e5e5e5; }
+    td input, td select { padding: 6px 8px; font-size: 13px; border: 1px solid #ddd; border-radius: 4px; width: 100%; min-width: 70px; }
+
+    /* Photo */
+    .photo-area { text-align: center; padding: 20px 0; }
+    #photo-circle { width: 140px; height: 140px; border-radius: 50%; border: 3px dashed #c8102e; margin: 0 auto 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #fff8f8; overflow: hidden; position: relative; }
+    #photo-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-hint { color: #c8102e; font-size: 36px; display: block; }
+    .photo-hint span { display: block; font-size: 12px; margin-top: 4px; color: #c8102e; }
+    .photo-label { font-size: 13px; color: #888; margin-top: 6px; }
+    .photo-required { font-size: 12px; color: #c8102e; margin-top: 8px; display: none; }
+
+    /* Navigation */
+    .nav { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-back { flex: 1; padding: 13px; background: #f5f5f5; color: #555; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; }
+    .btn-next { flex: 2; padding: 13px; background: #c8102e; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    .btn-next:hover { background: #a00d25; }
+    .btn-submit { width: 100%; padding: 15px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    .btn-submit:hover { background: #15803d; }
+    .error-msg { color: #c8102e; font-size: 13px; margin-top: 8px; display: none; }
+
+    /* Position */
+    .pos-type { display: flex; gap: 12px; margin-bottom: 14px; }
+    .pos-btn { flex: 1; padding: 14px; border: 2px solid #ddd; border-radius: 8px; background: white; font-size: 15px; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .pos-btn.selected { border-color: #c8102e; background: #fff0f0; color: #c8102e; font-weight: bold; }
+
+    /* Step 0 photo special */
+    .step0-wrap { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    @media (max-width: 480px) {
+      .card { margin: 8px; padding: 16px; }
       .row { flex-direction: column; gap: 0; }
-      .row .field { min-width: 100%; }
-      .top-fields { flex-direction: column; gap: 0; }
-      .top-fields .field { min-width: 100%; }
-      .radio-group { gap: 12px; }
-      input, select, textarea { font-size: 16px; }
-      .table-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      table { min-width: 480px; }
-      td input, td select { font-size: 14px; min-width: 80px; }
     }
   </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">
-    <h1>KFC</h1>
-    <p>Ажил горилогчийн анкет</p>
+
+<div class="header">
+  <h1>KFC</h1>
+  <p>Ажил горилогчийн анкет</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span id="step-label">Алхам 1 / 9</span>
+    <span id="step-name">Зураг оруулах</span>
   </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:11%"></div></div>
+</div>
 
-  <form action="/apply" method="POST" id="mainForm">
-    <input type="hidden" name="photo_data" id="photo_data">
+<form action="/apply" method="POST" id="mainForm">
+<input type="hidden" name="photo_data" id="photo_data">
+<div class="card">
 
-    <!-- Зураг оруулах -->
-    <div style="text-align:center;margin-bottom:28px">
-      <div id="photo-wrap" onclick="document.getElementById('photo-input').click()" style="width:120px;height:120px;border-radius:50%;border:3px dashed #c8102e;margin:0 auto 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff8f8;overflow:hidden;position:relative">
-        <img id="photo-preview" src="" style="display:none;width:100%;height:100%;object-fit:cover">
-        <div id="photo-placeholder" style="text-align:center;color:#c8102e">
-          <div style="font-size:36px">📷</div>
-          <div style="font-size:11px;margin-top:4px">Зураг оруулах</div>
+<!-- АЛХАМ 0: Зураг -->
+<div class="step active" data-step="0">
+  <div class="step0-wrap">
+    <div class="step-title" style="width:100%;text-align:center">Өөрийн зургаа оруулна уу</div>
+    <div class="photo-area">
+      <div id="photo-circle" onclick="document.getElementById('photo-input').click()">
+        <img id="photo-preview" src="">
+        <div id="photo-placeholder">
+          <span class="photo-hint">📷<span>Дарж зураг оруулах</span></span>
         </div>
       </div>
       <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
-      <div style="font-size:12px;color:#999">Өөрийн зургаа дарж оруулна уу</div>
+      <p class="photo-label">Зургаа дарж сонгоно уу</p>
+      <p class="photo-required" id="photo-required">⚠ Зураг заавал оруулна уу</p>
     </div>
-    <script>
-      function previewPhoto(input) {
-        if (!input.files || !input.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('photo-preview').src = e.target.result;
-          document.getElementById('photo-preview').style.display = 'block';
-          document.getElementById('photo-placeholder').style.display = 'none';
-          document.getElementById('photo_data').value = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    </script>
-
-    <!-- Хандаж буй ажлын байр -->
-    <div class="top-fields">
-      <div class="field">
-        <label>Хандаж буй ажлын байр — Төрөл *</label>
-        <div class="radio-group" style="margin-bottom:8px">
-          <label><input type="radio" name="position_type" value="Оффис" onclick="togglePositions('office')" required> Оффис</label>
-          <label><input type="radio" name="position_type" value="Салбар" onclick="togglePositions('branch')"> Салбар</label>
-        </div>
-        <select name="position" id="select-office" required style="display:none">
-          <option value="">-- Оффисын ажлын байр сонгоно уу --</option>
-          <optgroup label="Хүний нөөцийн алба">
-            <option>Хүний нөөцийн албаны дарга</option>
-            <option>Хүний нөөцийн менежер</option>
-            <option>Хүний нөөцийн мэргэжилтэн</option>
-          </optgroup>
-          <optgroup label="ХАБЭА-н нэгж">
-            <option>ХАБЭА-н менежер</option>
-            <option>ХАБЭА-н мэргэжилтэн</option>
-          </optgroup>
-          <optgroup label="Хууль, захиргааны алба">
-            <option>Хууль, захиргааны менежер</option>
-            <option>Хууль, захиргааны мэргэжилтэн</option>
-            <option>Жолооч</option>
-          </optgroup>
-          <optgroup label="Санхүү бүртгэлийн алба">
-            <option>Санхүү бүртгэлийн албаны дарга</option>
-            <option>Санхүүгийн шинжээч</option>
-            <option>Ерөнхий нягтлан бодогч</option>
-            <option>Ахлах нябо</option>
-            <option>Нягтлан бодогч</option>
-          </optgroup>
-          <optgroup label="ГХХА алба">
-            <option>ГХХА албаны дарга</option>
-            <option>ГХХА менежер</option>
-            <option>Гаалийн менежер</option>
-            <option>ГХХА мэргэжилтэн</option>
-            <option>Гаалийн мэргэжилтэн</option>
-          </optgroup>
-          <optgroup label="Агуулах түгээлтийн алба">
-            <option>Агуулахын менежер</option>
-            <option>Нярав</option>
-            <option>Жолооч (агуулах)</option>
-            <option>Ачигч</option>
-          </optgroup>
-          <optgroup label="Бизнес хөгжлийн алба">
-            <option>БХ албаны дарга</option>
-            <option>Бизнес хөгжлийн мэргэжилтэн</option>
-          </optgroup>
-          <optgroup label="Маркетингийн алба">
-            <option>Маркетингийн албаны дарга</option>
-            <option>Маркетингийн менежер</option>
-          </optgroup>
-          <optgroup label="МТ-ийн алба">
-            <option>МТ-ийн албаны дарга</option>
-            <option>Мэдээлэл технологийн мэргэжилтэн</option>
-          </optgroup>
-          <optgroup label="Чанарын алба">
-            <option>Чанарын албаны дарга</option>
-            <option>Чанарын мэргэжилтэн</option>
-            <option>Эрүүл ахуйч</option>
-          </optgroup>
-          <optgroup label="Бүтээгдэхүүн хөгжүүлэлт">
-            <option>Бүтээгдэхүүн хөгжүүлэлтийн менежер</option>
-          </optgroup>
-          <optgroup label="ҮА алба">
-            <option>ҮА албаны дарга</option>
-            <option>Бүс хариуцсан менежер</option>
-            <option>Сургалтын менежер</option>
-            <option>Сургалтын мэргэжилтэн</option>
-            <option>Механик инженер</option>
-            <option>Цахилгаанчин</option>
-            <option>Мэдээллийн ажилтан</option>
-            <option>Сантехникч</option>
-            <option>Мужаан</option>
-          </optgroup>
-        </select>
-        <select name="position_branch" id="select-branch" style="display:none">
-          <option value="">-- Салбарын ажлын байр сонгоно уу --</option>
-          <optgroup label="ҮА алба">
-            <option>Салбарын ерөнхий менежер</option>
-            <option>Салбарын туслах менежер</option>
-            <option>Ээлжийн менежер</option>
-            <option>Салбарын ажилтан (FT)</option>
-            <option>Салбарын ажилтан (PT)</option>
-            <option>Жолооч</option>
-            <option>Үйлчлэгч</option>
-            <option>Харуул</option>
-          </optgroup>
-        </select>
-      </div>
-      <script>
-        function togglePositions(type) {
-          var office = document.getElementById('select-office');
-          var branch = document.getElementById('select-branch');
-          if (type === 'office') {
-            office.style.display = 'block';
-            office.required = true;
-            branch.style.display = 'none';
-            branch.required = false;
-          } else {
-            branch.style.display = 'block';
-            branch.required = true;
-            office.style.display = 'none';
-            office.required = false;
-          }
-        }
-      </script>
-      <div class="field">
-        <label>Бусад хандах боломжтой ажлын байр</label>
-        <input type="text" name="other_position" placeholder="Байвал бичнэ үү">
-      </div>
-      <div class="field">
-        <label>Хүсч буй цалингийн доод хэмжээ (мянгат)</label>
-        <input type="text" name="min_salary" placeholder="Жишээ: 1,500">
-      </div>
-      <div class="field">
-        <label>Ажилд орох боломжтой огноо</label>
-        <input type="date" name="start_date">
-      </div>
-    </div>
-
-    <!-- НЭГ: Үндсэн мэдээлэл -->
-    <div class="section">
-      <h2>Нэг. Үндсэн мэдээлэл</h2>
-      <div class="row">
-        <div class="field">
-          <label>1.1 Эцгийн/лахийн нэр *</label>
-          <input type="text" name="last_name" required placeholder="Эцгийн нэр">
-        </div>
-        <div class="field">
-          <label>1.2 Өөрийн нэр *</label>
-          <input type="text" name="first_name" required placeholder="Өөрийн нэр">
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>1.3 Төрсөн огноо *</label>
-          <input type="date" name="birthdate" required>
-        </div>
-        <div class="field">
-          <label>1.4 Хүйс *</label>
-          <div class="radio-group">
-            <label><input type="radio" name="gender" value="Эрэгтэй" required> Эрэгтэй</label>
-            <label><input type="radio" name="gender" value="Эмэгтэй"> Эмэгтэй</label>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>1.5 Регистрийн дугаар *</label>
-          <input type="text" name="register_id" required placeholder="АА00000000">
-        </div>
-        <div class="field">
-          <label>1.6 Имэйл хаяг *</label>
-          <input type="email" name="email" required placeholder="example@gmail.com">
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>1.7 Аймаг / Хот</label>
-          <input type="text" name="city" placeholder="Улаанбаатар">
-        </div>
-        <div class="field">
-          <label>Сум / Дүүрэг</label>
-          <input type="text" name="district" placeholder="Дүүрэг">
-        </div>
-        <div class="field">
-          <label>Баг / Хороо</label>
-          <input type="text" name="khoroo" placeholder="Хороо">
-        </div>
-      </div>
-      <div class="field">
-        <label>Дэлгэрэнгүй хаяг</label>
-        <input type="text" name="address" placeholder="Байр, тоот...">
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>1.8 Жолооны үнэмлэхтэй эсэх</label>
-          <div class="radio-group">
-            <label><input type="radio" name="has_license" value="Тийм"> Тийм</label>
-            <label><input type="radio" name="has_license" value="Үгүй" checked> Үгүй</label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Ангилал</label>
-          <input type="text" name="license_class" placeholder="А, В, С...">
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>1.9 Гар утас *</label>
-          <input type="tel" name="phone" required placeholder="99001122">
-        </div>
-        <div class="field">
-          <label>Гэрийн утас</label>
-          <input type="tel" name="home_phone" placeholder="Байвал бичнэ үү">
-        </div>
-        <div class="field">
-          <label>Яаралтай үед холбоо барих утас</label>
-          <input type="tel" name="emergency_phone" placeholder="99001122">
-        </div>
-        <div class="field">
-          <label>Хэн болох (нэр)</label>
-          <input type="text" name="emergency_contact" placeholder="Эхнэр, эцэг...">
-        </div>
-      </div>
-    </div>
-
-    <!-- ХОЁР: Боловсрол -->
-    <div class="section">
-      <h2>Хоёр. Боловсрол</h2>
-      <p class="note">2.1 Боловсрол (Өөрийн сурч байгаа болон сурсан сургуулийн мэдээллийг бичнэ үү)</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Хаана</th>
-            <th>Сургуулийн нэр</th>
-            <th>Элссэн он</th>
-            <th>Төгссөн он</th>
-            <th>Эзэмшсэн мэргэжил</th>
-            <th>Боловсролын зэрэг</th>
-            <th>Голч дүн</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="edu1_country" placeholder="МУ / Гадаад"></td>
-            <td><input type="text" name="edu1_school"></td>
-            <td><input type="text" name="edu1_start" placeholder="2015"></td>
-            <td><input type="text" name="edu1_end" placeholder="2019"></td>
-            <td><input type="text" name="edu1_major"></td>
-            <td><select name="edu1_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
-            <td><input type="text" name="edu1_gpa" placeholder="3.5"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="edu2_country"></td>
-            <td><input type="text" name="edu2_school"></td>
-            <td><input type="text" name="edu2_start"></td>
-            <td><input type="text" name="edu2_end"></td>
-            <td><input type="text" name="edu2_major"></td>
-            <td><select name="edu2_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
-            <td><input type="text" name="edu2_gpa"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="edu3_country"></td>
-            <td><input type="text" name="edu3_school"></td>
-            <td><input type="text" name="edu3_start"></td>
-            <td><input type="text" name="edu3_end"></td>
-            <td><input type="text" name="edu3_major"></td>
-            <td><select name="edu3_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
-            <td><input type="text" name="edu3_gpa"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="edu4_country"></td>
-            <td><input type="text" name="edu4_school"></td>
-            <td><input type="text" name="edu4_start"></td>
-            <td><input type="text" name="edu4_end"></td>
-            <td><input type="text" name="edu4_major"></td>
-            <td><select name="edu4_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
-            <td><input type="text" name="edu4_gpa"></td>
-          </tr>
-        </table>
-      </div>
-
-      <p class="note">2.2 Мэргэшлийн бэлтгэл (Гэрчилгээ бүхий бүрэн болон урт хугацааны хамрагдсан сургалтыг бичнэ үү)</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Хаана</th>
-            <th>Сургалтын агуулга</th>
-            <th>Үргэлжилсэн хугацаа</th>
-            <th>Сургалтын байгууллагын нэр</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="train1_year" placeholder="2022"></td>
-            <td><input type="text" name="train1_topic"></td>
-            <td><input type="text" name="train1_duration" placeholder="6 сар"></td>
-            <td><input type="text" name="train1_org"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="train2_year"></td>
-            <td><input type="text" name="train2_topic"></td>
-            <td><input type="text" name="train2_duration"></td>
-            <td><input type="text" name="train2_org"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="train3_year"></td>
-            <td><input type="text" name="train3_topic"></td>
-            <td><input type="text" name="train3_duration"></td>
-            <td><input type="text" name="train3_org"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="train4_year"></td>
-            <td><input type="text" name="train4_topic"></td>
-            <td><input type="text" name="train4_duration"></td>
-            <td><input type="text" name="train4_org"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- ГУРАВ: Ажлын туршлага -->
-    <div class="section">
-      <h2>Гурав. Ажлын туршлага</h2>
-      <p class="note">3.1 Хөдөлмөр эрхлэлтийн байдал (Одоогоос эхлэн бичнэ үү)</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Компани</th>
-            <th>Албан тушаал</th>
-            <th>Ажилд орсон он</th>
-            <th>Ажлаас гарсан он</th>
-            <th>Ажлаас гарсан шалтгаан</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="work1_company"></td>
-            <td><input type="text" name="work1_title"></td>
-            <td><input type="text" name="work1_start" placeholder="2022/01"></td>
-            <td><input type="text" name="work1_end" placeholder="2024/06"></td>
-            <td><input type="text" name="work1_reason"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="work2_company"></td>
-            <td><input type="text" name="work2_title"></td>
-            <td><input type="text" name="work2_start"></td>
-            <td><input type="text" name="work2_end"></td>
-            <td><input type="text" name="work2_reason"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="work3_company"></td>
-            <td><input type="text" name="work3_title"></td>
-            <td><input type="text" name="work3_start"></td>
-            <td><input type="text" name="work3_end"></td>
-            <td><input type="text" name="work3_reason"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="work4_company"></td>
-            <td><input type="text" name="work4_title"></td>
-            <td><input type="text" name="work4_start"></td>
-            <td><input type="text" name="work4_end"></td>
-            <td><input type="text" name="work4_reason"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="work5_company"></td>
-            <td><input type="text" name="work5_title"></td>
-            <td><input type="text" name="work5_start"></td>
-            <td><input type="text" name="work5_end"></td>
-            <td><input type="text" name="work5_reason"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="work6_company"></td>
-            <td><input type="text" name="work6_title"></td>
-            <td><input type="text" name="work6_start"></td>
-            <td><input type="text" name="work6_end"></td>
-            <td><input type="text" name="work6_reason"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- ДӨРӨВ: Үр чадвар -->
-    <div class="section">
-      <h2>Дөрөв. Үр чадвар</h2>
-
-      <p class="note">4.1 Гадаад хэлний мэдлэг</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Гадаад хэл</th>
-            <th>Бичих</th>
-            <th>Ярих</th>
-            <th>Сонсох</th>
-            <th>Унших</th>
-            <th>Үзсэн хугацаа</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="lang1_name" placeholder="Англи хэл"></td>
-            <td><select name="lang1_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang1_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang1_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang1_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><input type="text" name="lang1_years" placeholder="3 жил"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="lang2_name"></td>
-            <td><select name="lang2_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang2_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang2_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><select name="lang2_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
-            <td><input type="text" name="lang2_years"></td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="field">
-        <label>4.2 ОУ-д хүлээн зөвшөөрөгдсөн хэлний шалгалт өгсөн үү?</label>
-        <div class="radio-group">
-          <label><input type="radio" name="intl_exam" value="Тийм"> Тийм</label>
-          <label><input type="radio" name="intl_exam" value="Үгүй" checked> Үгүй</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Шалгалтын нэр</label>
-          <input type="text" name="intl_exam_name" placeholder="IELTS, TOEFL...">
-        </div>
-        <div class="field">
-          <label>Оноо</label>
-          <input type="text" name="intl_exam_score" placeholder="7.0">
-        </div>
-      </div>
-
-      <p class="note">4.3 Компьютерын мэдлэг (тохирох нүдэнд тэмдэглэнэ үү)</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Түвшин</th>
-            <th>MS Word</th>
-            <th>MS Excel</th>
-            <th>MS PowerPoint</th>
-            <th>Outlook</th>
-            <th>Интернет</th>
-            <th>Мэргэжлийн програм</th>
-          </tr>
-          <tr>
-            <td>Анхан шатны</td>
-            <td style="text-align:center"><input type="checkbox" name="word_basic"></td>
-            <td style="text-align:center"><input type="checkbox" name="excel_basic"></td>
-            <td style="text-align:center"><input type="checkbox" name="ppt_basic"></td>
-            <td style="text-align:center"><input type="checkbox" name="outlook_basic"></td>
-            <td style="text-align:center"><input type="checkbox" name="internet_basic"></td>
-            <td style="text-align:center"><input type="checkbox" name="other_soft_basic"></td>
-          </tr>
-          <tr>
-            <td>Хэрэглэзэний</td>
-            <td style="text-align:center"><input type="checkbox" name="word_mid"></td>
-            <td style="text-align:center"><input type="checkbox" name="excel_mid"></td>
-            <td style="text-align:center"><input type="checkbox" name="ppt_mid"></td>
-            <td style="text-align:center"><input type="checkbox" name="outlook_mid"></td>
-            <td style="text-align:center"><input type="checkbox" name="internet_mid"></td>
-            <td style="text-align:center"><input type="checkbox" name="other_soft_mid"></td>
-          </tr>
-          <tr>
-            <td>Бүрэн эзэмшсэн</td>
-            <td style="text-align:center"><input type="checkbox" name="word_adv"></td>
-            <td style="text-align:center"><input type="checkbox" name="excel_adv"></td>
-            <td style="text-align:center"><input type="checkbox" name="ppt_adv"></td>
-            <td style="text-align:center"><input type="checkbox" name="outlook_adv"></td>
-            <td style="text-align:center"><input type="checkbox" name="internet_adv"></td>
-            <td style="text-align:center"><input type="checkbox" name="other_soft_adv"></td>
-          </tr>
-        </table>
-      </div>
-
-      <p class="note">4.4 Авьяас чадвар, сонирхол</p>
-      <div class="table-section">
-        <table>
-          <tr><th>Төрөл</th><th>Гаргасан амжилтууд</th></tr>
-          <tr>
-            <td><input type="text" name="talent1_type" placeholder="Спорт, урлаг..."></td>
-            <td><input type="text" name="talent1_result"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="talent2_type"></td>
-            <td><input type="text" name="talent2_result"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- ТАВ: Гавьяа шагнал -->
-    <div class="section">
-      <h2>Тав. Гавьяа шагнал</h2>
-      <p class="note">5.1 Улсын чанартай төмрөөн урлагдан болон цол, одон медаль, мэн гадаад орноос авсан шагналуудыг бичнэ үү</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Шагнагдсан он</th>
-            <th>Шагналын нэр</th>
-            <th>Хаана ажиллах хугацаанд шагнагдсан</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="award1_year" placeholder="2020"></td>
-            <td><input type="text" name="award1_name"></td>
-            <td><input type="text" name="award1_org"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="award2_year"></td>
-            <td><input type="text" name="award2_name"></td>
-            <td><input type="text" name="award2_org"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- ЗУРГАА: Гэр бүлийн байдал -->
-    <div class="section">
-      <h2>Зургаа. Гэр бүлийн байдал</h2>
-      <p class="note">6.1 Зөвхөн ам бүлд байгаа хүмүүсийг бичнэ үү</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Овог нэр</th>
-            <th>Таны юу болох</th>
-            <th>Төрсөн он</th>
-            <th>Одоо эрхэлж буй ажил</th>
-            <th>Холбоо барих утас</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="fam1_name"></td>
-            <td><input type="text" name="fam1_relation" placeholder="Эхнэр/Нөхөр"></td>
-            <td><input type="text" name="fam1_birth" placeholder="1990"></td>
-            <td><input type="text" name="fam1_job"></td>
-            <td><input type="text" name="fam1_phone"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="fam2_name"></td>
-            <td><input type="text" name="fam2_relation" placeholder="Хүүхэд"></td>
-            <td><input type="text" name="fam2_birth"></td>
-            <td><input type="text" name="fam2_job"></td>
-            <td><input type="text" name="fam2_phone"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="fam3_name"></td>
-            <td><input type="text" name="fam3_relation"></td>
-            <td><input type="text" name="fam3_birth"></td>
-            <td><input type="text" name="fam3_job"></td>
-            <td><input type="text" name="fam3_phone"></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="fam4_name"></td>
-            <td><input type="text" name="fam4_relation"></td>
-            <td><input type="text" name="fam4_birth"></td>
-            <td><input type="text" name="fam4_job"></td>
-            <td><input type="text" name="fam4_phone"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- ДОЛОО: Харшил -->
-    <div class="section">
-      <h2>Долоо. Харшил</h2>
-      <p class="note">Танд дараах зүйлсэд харшил байгаа эсэхийг тэмдэглэнэ үү</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Харшлын төрөл</th>
-            <th>Харшил байгаа эсэх</th>
-            <th>Дэлгэрэнгүй (байвал)</th>
-          </tr>
-          <tr>
-            <td>Ургамал</td>
-            <td style="text-align:center">
-              <div class="radio-group" style="justify-content:center">
-                <label><input type="radio" name="allergy_plant" value="Тийм"> Тийм</label>
-                <label><input type="radio" name="allergy_plant" value="Үгүй" checked> Үгүй</label>
-              </div>
-            </td>
-            <td><input type="text" name="allergy_plant_detail" placeholder="Ямар ургамал..."></td>
-          </tr>
-          <tr>
-            <td>Тоос</td>
-            <td style="text-align:center">
-              <div class="radio-group" style="justify-content:center">
-                <label><input type="radio" name="allergy_dust" value="Тийм"> Тийм</label>
-                <label><input type="radio" name="allergy_dust" value="Үгүй" checked> Үгүй</label>
-              </div>
-            </td>
-            <td><input type="text" name="allergy_dust_detail" placeholder="Дэлгэрэнгүй..."></td>
-          </tr>
-          <tr>
-            <td>Химийн бодис</td>
-            <td style="text-align:center">
-              <div class="radio-group" style="justify-content:center">
-                <label><input type="radio" name="allergy_chemical" value="Тийм"> Тийм</label>
-                <label><input type="radio" name="allergy_chemical" value="Үгүй" checked> Үгүй</label>
-              </div>
-            </td>
-            <td><input type="text" name="allergy_chemical_detail" placeholder="Ямар бодис..."></td>
-          </tr>
-          <tr>
-            <td>Халуун</td>
-            <td style="text-align:center">
-              <div class="radio-group" style="justify-content:center">
-                <label><input type="radio" name="allergy_heat" value="Тийм"> Тийм</label>
-                <label><input type="radio" name="allergy_heat" value="Үгүй" checked> Үгүй</label>
-              </div>
-            </td>
-            <td><input type="text" name="allergy_heat_detail" placeholder="Дэлгэрэнгүй..."></td>
-          </tr>
-        </table>
-      </div>
-      <div class="field">
-        <label>Бусад харшил (байвал бичнэ үү)</label>
-        <input type="text" name="allergy_other" placeholder="Жишээ: сүү, буудайн гурил...">
-      </div>
-    </div>
-
-    <!-- НАЙМ: Бусад -->
-    <div class="section">
-      <h2>Найм. Бусад</h2>
-
-      <div class="field">
-        <label>7.1 Та ажлын байрны талаарх мэдээллийг ямар эх сурвалжаас авсан бэ?</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" name="source_website"> Компанийн сайт</label>
-          <label><input type="checkbox" name="source_zangia"> Зангиа</label>
-          <label><input type="checkbox" name="source_facebook"> Facebook</label>
-          <label><input type="checkbox" name="source_linkedin"> LinkedIn</label>
-          <label><input type="checkbox" name="source_other"> Бусад</label>
-        </div>
-      </div>
-
-      <p class="note">7.2 Таван Богд групп-д танил, найз, хамаатан садан ажилладаг эсэх</p>
-      <div class="table-section">
-        <table>
-          <tr>
-            <th>Таны юу болох</th>
-            <th>Овог нэр</th>
-            <th>Аль газар, нэгж</th>
-            <th>Албан тушаал</th>
-          </tr>
-          <tr>
-            <td><input type="text" name="ref1_relation"></td>
-            <td><input type="text" name="ref1_name"></td>
-            <td><input type="text" name="ref1_dept"></td>
-            <td><input type="text" name="ref1_title"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <button type="submit" class="submit-btn">Өргөдөл илгээх</button>
-  </form>
-
-  <div class="hr-link">
-    <a href="/hr">HR хуудас руу орох →</a>
+  </div>
+  <div class="nav">
+    <button type="button" class="btn-next" onclick="nextStep(0)">Үргэлжлүүлэх →</button>
   </div>
 </div>
+
+<!-- АЛХАМ 1: Ажлын байр -->
+<div class="step" data-step="1">
+  <div class="step-title">Хандаж буй ажлын байр</div>
+  <p class="required-note">* тэмдэгтэй талбарыг заавал бөглөнө үү</p>
+
+  <div class="field">
+    <label>Ажлын байрны төрөл *</label>
+    <div class="pos-type">
+      <button type="button" class="pos-btn" id="btn-office" onclick="selectType('Оффис')">🏢 Оффис</button>
+      <button type="button" class="pos-btn" id="btn-branch" onclick="selectType('Салбар')">🍗 Салбар</button>
+    </div>
+    <input type="hidden" name="position_type" id="position_type">
+  </div>
+
+  <div class="field" id="office-select" style="display:none">
+    <label>Оффисын ажлын байр *</label>
+    <select name="position" id="select-office">
+      <option value="">-- Сонгоно уу --</option>
+      <optgroup label="Хүний нөөцийн алба">
+        <option>Хүний нөөцийн албаны дарга</option>
+        <option>Хүний нөөцийн менежер</option>
+        <option>Хүний нөөцийн мэргэжилтэн</option>
+      </optgroup>
+      <optgroup label="ХАБЭА-н нэгж">
+        <option>ХАБЭА-н менежер</option>
+        <option>ХАБЭА-н мэргэжилтэн</option>
+      </optgroup>
+      <optgroup label="Хууль, захиргааны алба">
+        <option>Хууль, захиргааны менежер</option>
+        <option>Хууль, захиргааны мэргэжилтэн</option>
+        <option>Жолооч</option>
+      </optgroup>
+      <optgroup label="Санхүү бүртгэлийн алба">
+        <option>Санхүү бүртгэлийн албаны дарга</option>
+        <option>Санхүүгийн шинжээч</option>
+        <option>Ерөнхий нягтлан бодогч</option>
+        <option>Ахлах нябо</option>
+        <option>Нягтлан бодогч</option>
+      </optgroup>
+      <optgroup label="ГХХА алба">
+        <option>ГХХА албаны дарга</option>
+        <option>ГХХА менежер</option>
+        <option>Гаалийн менежер</option>
+        <option>ГХХА мэргэжилтэн</option>
+        <option>Гаалийн мэргэжилтэн</option>
+      </optgroup>
+      <optgroup label="Агуулах түгээлтийн алба">
+        <option>Агуулахын менежер</option>
+        <option>Нярав</option>
+        <option>Жолооч (агуулах)</option>
+        <option>Ачигч</option>
+      </optgroup>
+      <optgroup label="Бизнес хөгжлийн алба">
+        <option>БХ албаны дарга</option>
+        <option>Бизнес хөгжлийн мэргэжилтэн</option>
+      </optgroup>
+      <optgroup label="Маркетингийн алба">
+        <option>Маркетингийн албаны дарга</option>
+        <option>Маркетингийн менежер</option>
+      </optgroup>
+      <optgroup label="МТ-ийн алба">
+        <option>МТ-ийн албаны дарга</option>
+        <option>Мэдээлэл технологийн мэргэжилтэн</option>
+      </optgroup>
+      <optgroup label="Чанарын алба">
+        <option>Чанарын албаны дарга</option>
+        <option>Чанарын мэргэжилтэн</option>
+        <option>Эрүүл ахуйч</option>
+      </optgroup>
+      <optgroup label="Бүтээгдэхүүн хөгжүүлэлт">
+        <option>Бүтээгдэхүүн хөгжүүлэлтийн менежер</option>
+      </optgroup>
+      <optgroup label="ҮА алба">
+        <option>ҮА албаны дарга</option>
+        <option>Бүс хариуцсан менежер</option>
+        <option>Сургалтын менежер</option>
+        <option>Сургалтын мэргэжилтэн</option>
+        <option>Механик инженер</option>
+        <option>Цахилгаанчин</option>
+        <option>Мэдээллийн ажилтан</option>
+        <option>Сантехникч</option>
+        <option>Мужаан</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div class="field" id="branch-select" style="display:none">
+    <label>Салбарын ажлын байр *</label>
+    <select name="position_branch" id="select-branch">
+      <option value="">-- Сонгоно уу --</option>
+      <option>Салбарын ерөнхий менежер</option>
+      <option>Салбарын туслах менежер</option>
+      <option>Ээлжийн менежер</option>
+      <option>Салбарын ажилтан (FT)</option>
+      <option>Салбарын ажилтан (PT)</option>
+      <option>Жолооч</option>
+      <option>Үйлчлэгч</option>
+      <option>Харуул</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Бусад хандах боломжтой ажлын байр</label>
+    <input type="text" name="other_position" placeholder="Байвал бичнэ үү">
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Хүсч буй цалин (мянгат)</label>
+      <input type="text" name="min_salary" placeholder="Жишээ: 1,500">
+    </div>
+    <div class="field">
+      <label>Ажилд орох огноо</label>
+      <input type="date" name="start_date">
+    </div>
+  </div>
+  <p class="error-msg" id="err1">⚠ Ажлын байрны төрөл болон байрыг сонгоно уу</p>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(1)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(1)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 2: Үндсэн мэдээлэл -->
+<div class="step" data-step="2">
+  <div class="step-title">Нэг. Үндсэн мэдээлэл</div>
+  <p class="required-note">* тэмдэгтэй талбарыг заавал бөглөнө үү</p>
+  <div class="row">
+    <div class="field">
+      <label>1.1 Эцгийн нэр *</label>
+      <input type="text" name="last_name" id="last_name" placeholder="Эцгийн нэр">
+    </div>
+    <div class="field">
+      <label>1.2 Өөрийн нэр *</label>
+      <input type="text" name="first_name" id="first_name" placeholder="Өөрийн нэр">
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>1.3 Төрсөн огноо *</label>
+      <input type="date" name="birthdate" id="birthdate">
+    </div>
+    <div class="field">
+      <label>1.4 Хүйс *</label>
+      <div class="radio-group">
+        <label><input type="radio" name="gender" value="Эрэгтэй"> Эрэгтэй</label>
+        <label><input type="radio" name="gender" value="Эмэгтэй"> Эмэгтэй</label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>1.5 Регистрийн дугаар *</label>
+      <input type="text" name="register_id" id="register_id" placeholder="АА00000000">
+    </div>
+    <div class="field">
+      <label>1.6 Имэйл *</label>
+      <input type="email" name="email" id="email" placeholder="example@gmail.com">
+    </div>
+  </div>
+  <div class="field">
+    <label>1.7 Хаяг</label>
+    <div class="row">
+      <input type="text" name="city" placeholder="Аймаг/Хот">
+      <input type="text" name="district" placeholder="Дүүрэг">
+      <input type="text" name="khoroo" placeholder="Хороо">
+    </div>
+  </div>
+  <div class="field">
+    <input type="text" name="address" placeholder="Дэлгэрэнгүй хаяг (байр, тоот...)">
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>1.8 Жолооны үнэмлэх</label>
+      <div class="radio-group">
+        <label><input type="radio" name="has_license" value="Тийм"> Тийм</label>
+        <label><input type="radio" name="has_license" value="Үгүй" checked> Үгүй</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Ангилал</label>
+      <input type="text" name="license_class" placeholder="А, В, С...">
+    </div>
+  </div>
+  <div class="field">
+    <label>1.9 Гар утас *</label>
+    <input type="tel" name="phone" id="phone" placeholder="99001122">
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Гэрийн утас</label>
+      <input type="tel" name="home_phone" placeholder="Байвал бичнэ үү">
+    </div>
+    <div class="field">
+      <label>Яаралтай үед утас</label>
+      <input type="tel" name="emergency_phone" placeholder="99001122">
+    </div>
+    <div class="field">
+      <label>Хэн болох</label>
+      <input type="text" name="emergency_contact" placeholder="Эхнэр, эцэг...">
+    </div>
+  </div>
+  <p class="error-msg" id="err2">⚠ Заавал бөглөх талбарыг бүгдийг бөглөнө үү</p>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(2)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(2)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 3: Боловсрол -->
+<div class="step" data-step="3">
+  <div class="step-title">Хоёр. Боловсрол</div>
+  <p class="note">2.1 Сурч байгаа болон сурсан сургуулийн мэдээлэл (дор хаяж 1 мөр бөглөнө үү)</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Хаана</th><th>Сургуулийн нэр</th><th>Элссэн</th><th>Төгссөн</th><th>Мэргэжил</th><th>Зэрэг</th><th>Голч</th></tr>
+      <tr>
+        <td><input type="text" name="edu1_country" placeholder="МУ/Гадаад"></td>
+        <td><input type="text" name="edu1_school" id="edu1_school"></td>
+        <td><input type="text" name="edu1_start" placeholder="2015"></td>
+        <td><input type="text" name="edu1_end" placeholder="2019"></td>
+        <td><input type="text" name="edu1_major"></td>
+        <td><select name="edu1_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+        <td><input type="text" name="edu1_gpa" placeholder="3.5"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="edu2_country"></td>
+        <td><input type="text" name="edu2_school"></td>
+        <td><input type="text" name="edu2_start"></td>
+        <td><input type="text" name="edu2_end"></td>
+        <td><input type="text" name="edu2_major"></td>
+        <td><select name="edu2_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+        <td><input type="text" name="edu2_gpa"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="edu3_country"></td>
+        <td><input type="text" name="edu3_school"></td>
+        <td><input type="text" name="edu3_start"></td>
+        <td><input type="text" name="edu3_end"></td>
+        <td><input type="text" name="edu3_major"></td>
+        <td><select name="edu3_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+        <td><input type="text" name="edu3_gpa"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="edu4_country"></td>
+        <td><input type="text" name="edu4_school"></td>
+        <td><input type="text" name="edu4_start"></td>
+        <td><input type="text" name="edu4_end"></td>
+        <td><input type="text" name="edu4_major"></td>
+        <td><select name="edu4_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+        <td><input type="text" name="edu4_gpa"></td>
+      </tr>
+    </table>
+  </div>
+  <p class="note" style="margin-top:14px">2.2 Мэргэшлийн сургалт (гэрчилгээтэй)</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Он</th><th>Сургалтын агуулга</th><th>Хугацаа</th><th>Байгууллага</th></tr>
+      <tr>
+        <td><input type="text" name="train1_year" placeholder="2022"></td>
+        <td><input type="text" name="train1_topic"></td>
+        <td><input type="text" name="train1_duration" placeholder="6 сар"></td>
+        <td><input type="text" name="train1_org"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="train2_year"></td>
+        <td><input type="text" name="train2_topic"></td>
+        <td><input type="text" name="train2_duration"></td>
+        <td><input type="text" name="train2_org"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="train3_year"></td>
+        <td><input type="text" name="train3_topic"></td>
+        <td><input type="text" name="train3_duration"></td>
+        <td><input type="text" name="train3_org"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="train4_year"></td>
+        <td><input type="text" name="train4_topic"></td>
+        <td><input type="text" name="train4_duration"></td>
+        <td><input type="text" name="train4_org"></td>
+      </tr>
+    </table>
+  </div>
+  <p class="error-msg" id="err3">⚠ Дор хаяж нэг сургуулийн мэдээлэл бөглөнө үү</p>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(3)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(3)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 4: Ажлын туршлага -->
+<div class="step" data-step="4">
+  <div class="step-title">Гурав. Ажлын туршлага</div>
+  <p class="note">Одоогоос эхлэн бичнэ үү. Туршлагагүй бол хоосон орхиж болно.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Компани</th><th>Албан тушаал</th><th>Орсон он</th><th>Гарсан он</th><th>Гарсан шалтгаан</th></tr>
+      <tr>
+        <td><input type="text" name="work1_company"></td>
+        <td><input type="text" name="work1_title"></td>
+        <td><input type="text" name="work1_start" placeholder="2022/01"></td>
+        <td><input type="text" name="work1_end" placeholder="2024/06"></td>
+        <td><input type="text" name="work1_reason"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="work2_company"></td>
+        <td><input type="text" name="work2_title"></td>
+        <td><input type="text" name="work2_start"></td>
+        <td><input type="text" name="work2_end"></td>
+        <td><input type="text" name="work2_reason"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="work3_company"></td>
+        <td><input type="text" name="work3_title"></td>
+        <td><input type="text" name="work3_start"></td>
+        <td><input type="text" name="work3_end"></td>
+        <td><input type="text" name="work3_reason"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="work4_company"></td>
+        <td><input type="text" name="work4_title"></td>
+        <td><input type="text" name="work4_start"></td>
+        <td><input type="text" name="work4_end"></td>
+        <td><input type="text" name="work4_reason"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="work5_company"></td>
+        <td><input type="text" name="work5_title"></td>
+        <td><input type="text" name="work5_start"></td>
+        <td><input type="text" name="work5_end"></td>
+        <td><input type="text" name="work5_reason"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="work6_company"></td>
+        <td><input type="text" name="work6_title"></td>
+        <td><input type="text" name="work6_start"></td>
+        <td><input type="text" name="work6_end"></td>
+        <td><input type="text" name="work6_reason"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(4)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(4)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 5: Үр чадвар -->
+<div class="step" data-step="5">
+  <div class="step-title">Дөрөв. Үр чадвар</div>
+  <p class="note">4.1 Гадаад хэлний мэдлэг (1=муу, 5=маш сайн)</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Хэл</th><th>Бичих</th><th>Ярих</th><th>Сонсох</th><th>Унших</th><th>Жил</th></tr>
+      <tr>
+        <td><input type="text" name="lang1_name" placeholder="Англи хэл"></td>
+        <td><select name="lang1_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang1_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang1_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang1_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><input type="text" name="lang1_years" placeholder="3 жил"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="lang2_name"></td>
+        <td><select name="lang2_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang2_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang2_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><select name="lang2_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+        <td><input type="text" name="lang2_years"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="field">
+    <label>4.2 Олон улсын хэлний шалгалт өгсөн үү?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="intl_exam" value="Тийм"> Тийм</label>
+      <label><input type="radio" name="intl_exam" value="Үгүй" checked> Үгүй</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field"><input type="text" name="intl_exam_name" placeholder="IELTS, TOEFL..."></div>
+    <div class="field"><input type="text" name="intl_exam_score" placeholder="Оноо: 7.0"></div>
+  </div>
+  <p class="note" style="margin-top:10px">4.3 Компьютерын мэдлэг</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Түвшин</th><th>MS Word</th><th>MS Excel</th><th>PowerPoint</th><th>Outlook</th><th>Интернет</th><th>Мэргэжлийн</th></tr>
+      <tr>
+        <td>Анхан шат</td>
+        <td style="text-align:center"><input type="checkbox" name="word_basic"></td>
+        <td style="text-align:center"><input type="checkbox" name="excel_basic"></td>
+        <td style="text-align:center"><input type="checkbox" name="ppt_basic"></td>
+        <td style="text-align:center"><input type="checkbox" name="outlook_basic"></td>
+        <td style="text-align:center"><input type="checkbox" name="internet_basic"></td>
+        <td style="text-align:center"><input type="checkbox" name="other_soft_basic"></td>
+      </tr>
+      <tr>
+        <td>Хэрэглэгч</td>
+        <td style="text-align:center"><input type="checkbox" name="word_mid"></td>
+        <td style="text-align:center"><input type="checkbox" name="excel_mid"></td>
+        <td style="text-align:center"><input type="checkbox" name="ppt_mid"></td>
+        <td style="text-align:center"><input type="checkbox" name="outlook_mid"></td>
+        <td style="text-align:center"><input type="checkbox" name="internet_mid"></td>
+        <td style="text-align:center"><input type="checkbox" name="other_soft_mid"></td>
+      </tr>
+      <tr>
+        <td>Бүрэн эзэмшсэн</td>
+        <td style="text-align:center"><input type="checkbox" name="word_adv"></td>
+        <td style="text-align:center"><input type="checkbox" name="excel_adv"></td>
+        <td style="text-align:center"><input type="checkbox" name="ppt_adv"></td>
+        <td style="text-align:center"><input type="checkbox" name="outlook_adv"></td>
+        <td style="text-align:center"><input type="checkbox" name="internet_adv"></td>
+        <td style="text-align:center"><input type="checkbox" name="other_soft_adv"></td>
+      </tr>
+    </table>
+  </div>
+  <p class="note" style="margin-top:10px">4.4 Авьяас, сонирхол</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Төрөл</th><th>Гаргасан амжилт</th></tr>
+      <tr>
+        <td><input type="text" name="talent1_type" placeholder="Спорт, урлаг..."></td>
+        <td><input type="text" name="talent1_result"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="talent2_type"></td>
+        <td><input type="text" name="talent2_result"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(5)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(5)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 6: Гавьяа + Гэр бүл -->
+<div class="step" data-step="6">
+  <div class="step-title">Тав. Гавьяа шагнал</div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Шагнагдсан он</th><th>Шагналын нэр</th><th>Байгууллага</th></tr>
+      <tr>
+        <td><input type="text" name="award1_year" placeholder="2020"></td>
+        <td><input type="text" name="award1_name"></td>
+        <td><input type="text" name="award1_org"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="award2_year"></td>
+        <td><input type="text" name="award2_name"></td>
+        <td><input type="text" name="award2_org"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="step-title" style="margin-top:20px">Зургаа. Гэр бүлийн байдал</div>
+  <p class="note">Ам бүлд байгаа хүмүүсийг бичнэ үү</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Овог нэр</th><th>Таны юу болох</th><th>Төрсөн он</th><th>Ажил</th><th>Утас</th></tr>
+      <tr>
+        <td><input type="text" name="fam1_name"></td>
+        <td><input type="text" name="fam1_relation" placeholder="Эхнэр/Нөхөр"></td>
+        <td><input type="text" name="fam1_birth" placeholder="1990"></td>
+        <td><input type="text" name="fam1_job"></td>
+        <td><input type="text" name="fam1_phone"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="fam2_name"></td>
+        <td><input type="text" name="fam2_relation" placeholder="Хүүхэд"></td>
+        <td><input type="text" name="fam2_birth"></td>
+        <td><input type="text" name="fam2_job"></td>
+        <td><input type="text" name="fam2_phone"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="fam3_name"></td>
+        <td><input type="text" name="fam3_relation"></td>
+        <td><input type="text" name="fam3_birth"></td>
+        <td><input type="text" name="fam3_job"></td>
+        <td><input type="text" name="fam3_phone"></td>
+      </tr>
+      <tr>
+        <td><input type="text" name="fam4_name"></td>
+        <td><input type="text" name="fam4_relation"></td>
+        <td><input type="text" name="fam4_birth"></td>
+        <td><input type="text" name="fam4_job"></td>
+        <td><input type="text" name="fam4_phone"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(6)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(6)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 7: Харшил -->
+<div class="step" data-step="7">
+  <div class="step-title">Долоо. Харшил</div>
+  <p class="note">Танд дараах зүйлсэд харшил байгаа эсэхийг тэмдэглэнэ үү</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Харшлын төрөл</th><th>Байгаа эсэх</th><th>Дэлгэрэнгүй</th></tr>
+      <tr>
+        <td>Ургамал</td>
+        <td><div class="radio-group" style="justify-content:center">
+          <label><input type="radio" name="allergy_plant" value="Тийм"> Тийм</label>
+          <label><input type="radio" name="allergy_plant" value="Үгүй" checked> Үгүй</label>
+        </div></td>
+        <td><input type="text" name="allergy_plant_detail" placeholder="Ямар ургамал..."></td>
+      </tr>
+      <tr>
+        <td>Тоос</td>
+        <td><div class="radio-group" style="justify-content:center">
+          <label><input type="radio" name="allergy_dust" value="Тийм"> Тийм</label>
+          <label><input type="radio" name="allergy_dust" value="Үгүй" checked> Үгүй</label>
+        </div></td>
+        <td><input type="text" name="allergy_dust_detail" placeholder="Дэлгэрэнгүй..."></td>
+      </tr>
+      <tr>
+        <td>Химийн бодис</td>
+        <td><div class="radio-group" style="justify-content:center">
+          <label><input type="radio" name="allergy_chemical" value="Тийм"> Тийм</label>
+          <label><input type="radio" name="allergy_chemical" value="Үгүй" checked> Үгүй</label>
+        </div></td>
+        <td><input type="text" name="allergy_chemical_detail" placeholder="Ямар бодис..."></td>
+      </tr>
+      <tr>
+        <td>Халуун</td>
+        <td><div class="radio-group" style="justify-content:center">
+          <label><input type="radio" name="allergy_heat" value="Тийм"> Тийм</label>
+          <label><input type="radio" name="allergy_heat" value="Үгүй" checked> Үгүй</label>
+        </div></td>
+        <td><input type="text" name="allergy_heat_detail" placeholder="Дэлгэрэнгүй..."></td>
+      </tr>
+    </table>
+  </div>
+  <div class="field">
+    <label>Бусад харшил</label>
+    <input type="text" name="allergy_other" placeholder="Жишээ: сүү, буудайн гурил...">
+  </div>
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(7)">← Буцах</button>
+    <button type="button" class="btn-next" onclick="nextStep(7)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<!-- АЛХАМ 8: Бусад + Submit -->
+<div class="step" data-step="8">
+  <div class="step-title">Найм. Бусад мэдээлэл</div>
+  <div class="field">
+    <label>7.1 Ажлын байрны мэдээллийг хаанаас авсан бэ?</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="source_website"> Компанийн сайт</label>
+      <label><input type="checkbox" name="source_zangia"> Зангиа</label>
+      <label><input type="checkbox" name="source_facebook"> Facebook</label>
+      <label><input type="checkbox" name="source_linkedin"> LinkedIn</label>
+      <label><input type="checkbox" name="source_other"> Бусад</label>
+    </div>
+  </div>
+  <p class="note" style="margin-top:10px">7.2 KFC-д танил, найз, хамаатан ажилладаг эсэх</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Таны юу болох</th><th>Овог нэр</th><th>Аль нэгж</th><th>Албан тушаал</th></tr>
+      <tr>
+        <td><input type="text" name="ref1_relation"></td>
+        <td><input type="text" name="ref1_name"></td>
+        <td><input type="text" name="ref1_dept"></td>
+        <td><input type="text" name="ref1_title"></td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#fff8f8;border:1px solid #c8102e;border-radius:8px;padding:16px;margin-top:20px;text-align:center">
+    <div style="font-size:14px;color:#555;margin-bottom:8px">Бүх мэдээллийг зөв бөглөсөн эсэхийг шалгаад илгээнэ үү</div>
+  </div>
+
+  <div class="nav">
+    <button type="button" class="btn-back" onclick="prevStep(8)">← Буцах</button>
+  </div>
+  <button type="submit" class="btn-submit">✅ Өргөдөл илгээх</button>
+  <div style="text-align:center;margin-top:14px;font-size:13px;color:#aaa"><a href="/hr" style="color:#c8102e">HR хуудас →</a></div>
+</div>
+
+</div><!-- end card -->
+</form>
+
+<script>
+var currentStep = 0;
+var totalSteps = 9;
+var stepNames = ['Зураг','Ажлын байр','Үндсэн мэдээлэл','Боловсрол','Ажлын туршлага','Үр чадвар','Гэр бүл','Харшил','Бусад'];
+
+function updateProgress(step) {
+  document.getElementById('step-label').textContent = 'Алхам ' + (step+1) + ' / ' + totalSteps;
+  document.getElementById('step-name').textContent = stepNames[step];
+  document.getElementById('progress-fill').style.width = ((step+1)/totalSteps*100) + '%';
+  window.scrollTo(0, 0);
+}
+
+function showStep(step) {
+  document.querySelectorAll('.step').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelector('.step[data-step="'+step+'"]').classList.add('active');
+  currentStep = step;
+  updateProgress(step);
+}
+
+function nextStep(step) {
+  if (!validateStep(step)) return;
+  showStep(step + 1);
+}
+
+function prevStep(step) {
+  showStep(step - 1);
+}
+
+function validateStep(step) {
+  // Step 0: зураг заавал
+  if (step === 0) {
+    if (!document.getElementById('photo_data').value) {
+      document.getElementById('photo-required').style.display = 'block';
+      return false;
+    }
+    return true;
+  }
+  // Step 1: ажлын байр
+  if (step === 1) {
+    var type = document.getElementById('position_type').value;
+    if (!type) { showErr('err1'); return false; }
+    if (type === 'Оффис' && !document.getElementById('select-office').value) { showErr('err1'); return false; }
+    if (type === 'Салбар' && !document.getElementById('select-branch').value) { showErr('err1'); return false; }
+    hideErr('err1'); return true;
+  }
+  // Step 2: үндсэн мэдээлэл
+  if (step === 2) {
+    var ok = val('last_name') && val('first_name') && val('birthdate') && val('register_id') && val('email') && val('phone');
+    var gender = document.querySelector('input[name="gender"]:checked');
+    if (!ok || !gender) { showErr('err2'); return false; }
+    hideErr('err2'); return true;
+  }
+  // Step 3: боловсрол — дор хаяж нэг сургуулийн нэр
+  if (step === 3) {
+    if (!document.querySelector('input[name="edu1_school"]').value.trim()) { showErr('err3'); return false; }
+    hideErr('err3'); return true;
+  }
+  return true;
+}
+
+function val(id) {
+  var el = document.getElementById(id) || document.querySelector('[name="'+id+'"]');
+  return el && el.value.trim();
+}
+function showErr(id) { document.getElementById(id).style.display = 'block'; }
+function hideErr(id) { document.getElementById(id).style.display = 'none'; }
+
+function previewPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('photo-preview').src = e.target.result;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+    document.getElementById('photo_data').value = e.target.result;
+    document.getElementById('photo-required').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function selectType(type) {
+  document.getElementById('position_type').value = type;
+  document.getElementById('btn-office').classList.toggle('selected', type === 'Оффис');
+  document.getElementById('btn-branch').classList.toggle('selected', type === 'Салбар');
+  document.getElementById('office-select').style.display = type === 'Оффис' ? 'block' : 'none';
+  document.getElementById('branch-select').style.display = type === 'Салбар' ? 'block' : 'none';
+}
+
+updateProgress(0);
+</script>
 </body>
 </html>
