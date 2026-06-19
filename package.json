@@ -1,0 +1,12 @@
+{
+  "name": "kfc-recruitment",
+  "version": "1.0.0",
+  "description": "KFC Mongolia Recruitment System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+photos/
+cloudflared.exe
+jobs.xlsx
+start.bat
+package-lock.json

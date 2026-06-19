@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>KFC - Ажил горилогчийн анкет</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 30px 20px; }
+    .card { background: white; padding: 36px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+    .logo { text-align: center; margin-bottom: 28px; }
+    .logo h1 { color: #c8102e; font-size: 2rem; margin: 0; }
+    .logo p { color: #666; margin: 4px 0 0; font-size: 15px; }
+    .section { border-top: 2px solid #c8102e; margin-top: 32px; padding-top: 16px; }
+    .section h2 { color: #c8102e; font-size: 15px; margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .row .field { flex: 1; min-width: 180px; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: bold; color: #444; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 9px 11px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #c8102e; }
+    textarea { resize: vertical; min-height: 70px; }
+    .table-section { overflow-x: auto; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #c8102e; color: white; padding: 8px; text-align: left; white-space: nowrap; }
+    td { padding: 6px; border: 1px solid #ddd; }
+    td input, td select { padding: 5px 8px; font-size: 13px; border: none; background: transparent; }
+    td input:focus, td select:focus { background: #fff8f8; border: 1px solid #c8102e; border-radius: 3px; }
+    .radio-group { display: flex; gap: 20px; align-items: center; padding: 9px 0; }
+    .radio-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; padding: 6px 0; }
+    .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .note { font-size: 12px; color: #888; margin-bottom: 12px; }
+    .submit-btn { width: 100%; padding: 14px; background: #c8102e; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 24px; }
+    .submit-btn:hover { background: #a00d25; }
+    .hr-link { text-align: center; margin-top: 14px; font-size: 13px; color: #999; }
+    .hr-link a { color: #c8102e; }
+    .top-fields { display: flex; gap: 16px; flex-wrap: wrap; }
+    .top-fields .field { flex: 1; min-width: 200px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <h1>KFC</h1>
+    <p>Ажил горилогчийн анкет</p>
+  </div>
+
+  <form action="/apply" method="POST" id="mainForm">
+    <input type="hidden" name="photo_data" id="photo_data">
+
+    <!-- Зураг оруулах -->
+    <div style="text-align:center;margin-bottom:28px">
+      <div id="photo-wrap" onclick="document.getElementById('photo-input').click()" style="width:120px;height:120px;border-radius:50%;border:3px dashed #c8102e;margin:0 auto 10px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff8f8;overflow:hidden;position:relative">
+        <img id="photo-preview" src="" style="display:none;width:100%;height:100%;object-fit:cover">
+        <div id="photo-placeholder" style="text-align:center;color:#c8102e">
+          <div style="font-size:36px">📷</div>
+          <div style="font-size:11px;margin-top:4px">Зураг оруулах</div>
+        </div>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <div style="font-size:12px;color:#999">Өөрийн зургаа дарж оруулна уу</div>
+    </div>
+    <script>
+      function previewPhoto(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('photo-preview').src = e.target.result;
+          document.getElementById('photo-preview').style.display = 'block';
+          document.getElementById('photo-placeholder').style.display = 'none';
+          document.getElementById('photo_data').value = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    </script>
+
+    <!-- Хандаж буй ажлын байр -->
+    <div class="top-fields">
+      <div class="field">
+        <label>Хандаж буй ажлын байр — Төрөл *</label>
+        <div class="radio-group" style="margin-bottom:8px">
+          <label><input type="radio" name="position_type" value="Оффис" onclick="togglePositions('office')" required> Оффис</label>
+          <label><input type="radio" name="position_type" value="Салбар" onclick="togglePositions('branch')"> Салбар</label>
+        </div>
+        <select name="position" id="select-office" required style="display:none">
+          <option value="">-- Оффисын ажлын байр сонгоно уу --</option>
+          <optgroup label="Хүний нөөцийн алба">
+            <option>Хүний нөөцийн албаны дарга</option>
+            <option>Хүний нөөцийн менежер</option>
+            <option>Хүний нөөцийн мэргэжилтэн</option>
+          </optgroup>
+          <optgroup label="ХАБЭА-н нэгж">
+            <option>ХАБЭА-н менежер</option>
+            <option>ХАБЭА-н мэргэжилтэн</option>
+          </optgroup>
+          <optgroup label="Хууль, захиргааны алба">
+            <option>Хууль, захиргааны менежер</option>
+            <option>Хууль, захиргааны мэргэжилтэн</option>
+            <option>Жолооч</option>
+          </optgroup>
+          <optgroup label="Санхүү бүртгэлийн алба">
+            <option>Санхүү бүртгэлийн албаны дарга</option>
+            <option>Санхүүгийн шинжээч</option>
+            <option>Ерөнхий нягтлан бодогч</option>
+            <option>Ахлах нябо</option>
+            <option>Нягтлан бодогч</option>
+          </optgroup>
+          <optgroup label="ГХХА алба">
+            <option>ГХХА албаны дарга</option>
+            <option>ГХХА менежер</option>
+            <option>Гаалийн менежер</option>
+            <option>ГХХА мэргэжилтэн</option>
+            <option>Гаалийн мэргэжилтэн</option>
+          </optgroup>
+          <optgroup label="Агуулах түгээлтийн алба">
+            <option>Агуулахын менежер</option>
+            <option>Нярав</option>
+            <option>Жолооч (агуулах)</option>
+            <option>Ачигч</option>
+          </optgroup>
+          <optgroup label="Бизнес хөгжлийн алба">
+            <option>БХ албаны дарга</option>
+            <option>Бизнес хөгжлийн мэргэжилтэн</option>
+          </optgroup>
+          <optgroup label="Маркетингийн алба">
+            <option>Маркетингийн албаны дарга</option>
+            <option>Маркетингийн менежер</option>
+          </optgroup>
+          <optgroup label="МТ-ийн алба">
+            <option>МТ-ийн албаны дарга</option>
+            <option>Мэдээлэл технологийн мэргэжилтэн</option>
+          </optgroup>
+          <optgroup label="Чанарын алба">
+            <option>Чанарын албаны дарга</option>
+            <option>Чанарын мэргэжилтэн</option>
+            <option>Эрүүл ахуйч</option>
+          </optgroup>
+          <optgroup label="Бүтээгдэхүүн хөгжүүлэлт">
+            <option>Бүтээгдэхүүн хөгжүүлэлтийн менежер</option>
+          </optgroup>
+          <optgroup label="ҮА алба">
+            <option>ҮА албаны дарга</option>
+            <option>Бүс хариуцсан менежер</option>
+            <option>Сургалтын менежер</option>
+            <option>Сургалтын мэргэжилтэн</option>
+            <option>Механик инженер</option>
+            <option>Цахилгаанчин</option>
+            <option>Мэдээллийн ажилтан</option>
+            <option>Сантехникч</option>
+            <option>Мужаан</option>
+          </optgroup>
+        </select>
+        <select name="position_branch" id="select-branch" style="display:none">
+          <option value="">-- Салбарын ажлын байр сонгоно уу --</option>
+          <optgroup label="ҮА алба">
+            <option>Салбарын ерөнхий менежер</option>
+            <option>Салбарын туслах менежер</option>
+            <option>Ээлжийн менежер</option>
+            <option>Салбарын ажилтан (FT)</option>
+            <option>Салбарын ажилтан (PT)</option>
+            <option>Жолооч</option>
+            <option>Үйлчлэгч</option>
+            <option>Харуул</option>
+          </optgroup>
+        </select>
+      </div>
+      <script>
+        function togglePositions(type) {
+          var office = document.getElementById('select-office');
+          var branch = document.getElementById('select-branch');
+          if (type === 'office') {
+            office.style.display = 'block';
+            office.required = true;
+            branch.style.display = 'none';
+            branch.required = false;
+          } else {
+            branch.style.display = 'block';
+            branch.required = true;
+            office.style.display = 'none';
+            office.required = false;
+          }
+        }
+      </script>
+      <div class="field">
+        <label>Бусад хандах боломжтой ажлын байр</label>
+        <input type="text" name="other_position" placeholder="Байвал бичнэ үү">
+      </div>
+      <div class="field">
+        <label>Хүсч буй цалингийн доод хэмжээ (мянгат)</label>
+        <input type="text" name="min_salary" placeholder="Жишээ: 1,500">
+      </div>
+      <div class="field">
+        <label>Ажилд орох боломжтой огноо</label>
+        <input type="date" name="start_date">
+      </div>
+    </div>
+
+    <!-- НЭГ: Үндсэн мэдээлэл -->
+    <div class="section">
+      <h2>Нэг. Үндсэн мэдээлэл</h2>
+      <div class="row">
+        <div class="field">
+          <label>1.1 Эцгийн/лахийн нэр *</label>
+          <input type="text" name="last_name" required placeholder="Эцгийн нэр">
+        </div>
+        <div class="field">
+          <label>1.2 Өөрийн нэр *</label>
+          <input type="text" name="first_name" required placeholder="Өөрийн нэр">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>1.3 Төрсөн огноо *</label>
+          <input type="date" name="birthdate" required>
+        </div>
+        <div class="field">
+          <label>1.4 Хүйс *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="Эрэгтэй" required> Эрэгтэй</label>
+            <label><input type="radio" name="gender" value="Эмэгтэй"> Эмэгтэй</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>1.5 Регистрийн дугаар *</label>
+          <input type="text" name="register_id" required placeholder="АА00000000">
+        </div>
+        <div class="field">
+          <label>1.6 Имэйл хаяг *</label>
+          <input type="email" name="email" required placeholder="example@gmail.com">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>1.7 Аймаг / Хот</label>
+          <input type="text" name="city" placeholder="Улаанбаатар">
+        </div>
+        <div class="field">
+          <label>Сум / Дүүрэг</label>
+          <input type="text" name="district" placeholder="Дүүрэг">
+        </div>
+        <div class="field">
+          <label>Баг / Хороо</label>
+          <input type="text" name="khoroo" placeholder="Хороо">
+        </div>
+      </div>
+      <div class="field">
+        <label>Дэлгэрэнгүй хаяг</label>
+        <input type="text" name="address" placeholder="Байр, тоот...">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>1.8 Жолооны үнэмлэхтэй эсэх</label>
+          <div class="radio-group">
+            <label><input type="radio" name="has_license" value="Тийм"> Тийм</label>
+            <label><input type="radio" name="has_license" value="Үгүй" checked> Үгүй</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ангилал</label>
+          <input type="text" name="license_class" placeholder="А, В, С...">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>1.9 Гар утас *</label>
+          <input type="tel" name="phone" required placeholder="99001122">
+        </div>
+        <div class="field">
+          <label>Гэрийн утас</label>
+          <input type="tel" name="home_phone" placeholder="Байвал бичнэ үү">
+        </div>
+        <div class="field">
+          <label>Яаралтай үед холбоо барих утас</label>
+          <input type="tel" name="emergency_phone" placeholder="99001122">
+        </div>
+        <div class="field">
+          <label>Хэн болох (нэр)</label>
+          <input type="text" name="emergency_contact" placeholder="Эхнэр, эцэг...">
+        </div>
+      </div>
+    </div>
+
+    <!-- ХОЁР: Боловсрол -->
+    <div class="section">
+      <h2>Хоёр. Боловсрол</h2>
+      <p class="note">2.1 Боловсрол (Өөрийн сурч байгаа болон сурсан сургуулийн мэдээллийг бичнэ үү)</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Хаана</th>
+            <th>Сургуулийн нэр</th>
+            <th>Элссэн он</th>
+            <th>Төгссөн он</th>
+            <th>Эзэмшсэн мэргэжил</th>
+            <th>Боловсролын зэрэг</th>
+            <th>Голч дүн</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="edu1_country" placeholder="МУ / Гадаад"></td>
+            <td><input type="text" name="edu1_school"></td>
+            <td><input type="text" name="edu1_start" placeholder="2015"></td>
+            <td><input type="text" name="edu1_end" placeholder="2019"></td>
+            <td><input type="text" name="edu1_major"></td>
+            <td><select name="edu1_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+            <td><input type="text" name="edu1_gpa" placeholder="3.5"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="edu2_country"></td>
+            <td><input type="text" name="edu2_school"></td>
+            <td><input type="text" name="edu2_start"></td>
+            <td><input type="text" name="edu2_end"></td>
+            <td><input type="text" name="edu2_major"></td>
+            <td><select name="edu2_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+            <td><input type="text" name="edu2_gpa"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="edu3_country"></td>
+            <td><input type="text" name="edu3_school"></td>
+            <td><input type="text" name="edu3_start"></td>
+            <td><input type="text" name="edu3_end"></td>
+            <td><input type="text" name="edu3_major"></td>
+            <td><select name="edu3_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+            <td><input type="text" name="edu3_gpa"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="edu4_country"></td>
+            <td><input type="text" name="edu4_school"></td>
+            <td><input type="text" name="edu4_start"></td>
+            <td><input type="text" name="edu4_end"></td>
+            <td><input type="text" name="edu4_major"></td>
+            <td><select name="edu4_degree"><option value="">-</option><option>Бакалавр</option><option>Магистр</option><option>Доктор</option><option>Дипломын</option><option>Бүрэн дунд</option></select></td>
+            <td><input type="text" name="edu4_gpa"></td>
+          </tr>
+        </table>
+      </div>
+
+      <p class="note">2.2 Мэргэшлийн бэлтгэл (Гэрчилгээ бүхий бүрэн болон урт хугацааны хамрагдсан сургалтыг бичнэ үү)</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Хаана</th>
+            <th>Сургалтын агуулга</th>
+            <th>Үргэлжилсэн хугацаа</th>
+            <th>Сургалтын байгууллагын нэр</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="train1_year" placeholder="2022"></td>
+            <td><input type="text" name="train1_topic"></td>
+            <td><input type="text" name="train1_duration" placeholder="6 сар"></td>
+            <td><input type="text" name="train1_org"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="train2_year"></td>
+            <td><input type="text" name="train2_topic"></td>
+            <td><input type="text" name="train2_duration"></td>
+            <td><input type="text" name="train2_org"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="train3_year"></td>
+            <td><input type="text" name="train3_topic"></td>
+            <td><input type="text" name="train3_duration"></td>
+            <td><input type="text" name="train3_org"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="train4_year"></td>
+            <td><input type="text" name="train4_topic"></td>
+            <td><input type="text" name="train4_duration"></td>
+            <td><input type="text" name="train4_org"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ГУРАВ: Ажлын туршлага -->
+    <div class="section">
+      <h2>Гурав. Ажлын туршлага</h2>
+      <p class="note">3.1 Хөдөлмөр эрхлэлтийн байдал (Одоогоос эхлэн бичнэ үү)</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Компани</th>
+            <th>Албан тушаал</th>
+            <th>Ажилд орсон он</th>
+            <th>Ажлаас гарсан он</th>
+            <th>Ажлаас гарсан шалтгаан</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="work1_company"></td>
+            <td><input type="text" name="work1_title"></td>
+            <td><input type="text" name="work1_start" placeholder="2022/01"></td>
+            <td><input type="text" name="work1_end" placeholder="2024/06"></td>
+            <td><input type="text" name="work1_reason"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="work2_company"></td>
+            <td><input type="text" name="work2_title"></td>
+            <td><input type="text" name="work2_start"></td>
+            <td><input type="text" name="work2_end"></td>
+            <td><input type="text" name="work2_reason"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="work3_company"></td>
+            <td><input type="text" name="work3_title"></td>
+            <td><input type="text" name="work3_start"></td>
+            <td><input type="text" name="work3_end"></td>
+            <td><input type="text" name="work3_reason"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="work4_company"></td>
+            <td><input type="text" name="work4_title"></td>
+            <td><input type="text" name="work4_start"></td>
+            <td><input type="text" name="work4_end"></td>
+            <td><input type="text" name="work4_reason"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="work5_company"></td>
+            <td><input type="text" name="work5_title"></td>
+            <td><input type="text" name="work5_start"></td>
+            <td><input type="text" name="work5_end"></td>
+            <td><input type="text" name="work5_reason"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="work6_company"></td>
+            <td><input type="text" name="work6_title"></td>
+            <td><input type="text" name="work6_start"></td>
+            <td><input type="text" name="work6_end"></td>
+            <td><input type="text" name="work6_reason"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ДӨРӨВ: Үр чадвар -->
+    <div class="section">
+      <h2>Дөрөв. Үр чадвар</h2>
+
+      <p class="note">4.1 Гадаад хэлний мэдлэг</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Гадаад хэл</th>
+            <th>Бичих</th>
+            <th>Ярих</th>
+            <th>Сонсох</th>
+            <th>Унших</th>
+            <th>Үзсэн хугацаа</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="lang1_name" placeholder="Англи хэл"></td>
+            <td><select name="lang1_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang1_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang1_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang1_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><input type="text" name="lang1_years" placeholder="3 жил"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="lang2_name"></td>
+            <td><select name="lang2_write"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang2_speak"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang2_listen"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><select name="lang2_read"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+            <td><input type="text" name="lang2_years"></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="field">
+        <label>4.2 ОУ-д хүлээн зөвшөөрөгдсөн хэлний шалгалт өгсөн үү?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="intl_exam" value="Тийм"> Тийм</label>
+          <label><input type="radio" name="intl_exam" value="Үгүй" checked> Үгүй</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Шалгалтын нэр</label>
+          <input type="text" name="intl_exam_name" placeholder="IELTS, TOEFL...">
+        </div>
+        <div class="field">
+          <label>Оноо</label>
+          <input type="text" name="intl_exam_score" placeholder="7.0">
+        </div>
+      </div>
+
+      <p class="note">4.3 Компьютерын мэдлэг (тохирох нүдэнд тэмдэглэнэ үү)</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Түвшин</th>
+            <th>MS Word</th>
+            <th>MS Excel</th>
+            <th>MS PowerPoint</th>
+            <th>Outlook</th>
+            <th>Интернет</th>
+            <th>Мэргэжлийн програм</th>
+          </tr>
+          <tr>
+            <td>Анхан шатны</td>
+            <td style="text-align:center"><input type="checkbox" name="word_basic"></td>
+            <td style="text-align:center"><input type="checkbox" name="excel_basic"></td>
+            <td style="text-align:center"><input type="checkbox" name="ppt_basic"></td>
+            <td style="text-align:center"><input type="checkbox" name="outlook_basic"></td>
+            <td style="text-align:center"><input type="checkbox" name="internet_basic"></td>
+            <td style="text-align:center"><input type="checkbox" name="other_soft_basic"></td>
+          </tr>
+          <tr>
+            <td>Хэрэглэзэний</td>
+            <td style="text-align:center"><input type="checkbox" name="word_mid"></td>
+            <td style="text-align:center"><input type="checkbox" name="excel_mid"></td>
+            <td style="text-align:center"><input type="checkbox" name="ppt_mid"></td>
+            <td style="text-align:center"><input type="checkbox" name="outlook_mid"></td>
+            <td style="text-align:center"><input type="checkbox" name="internet_mid"></td>
+            <td style="text-align:center"><input type="checkbox" name="other_soft_mid"></td>
+          </tr>
+          <tr>
+            <td>Бүрэн эзэмшсэн</td>
+            <td style="text-align:center"><input type="checkbox" name="word_adv"></td>
+            <td style="text-align:center"><input type="checkbox" name="excel_adv"></td>
+            <td style="text-align:center"><input type="checkbox" name="ppt_adv"></td>
+            <td style="text-align:center"><input type="checkbox" name="outlook_adv"></td>
+            <td style="text-align:center"><input type="checkbox" name="internet_adv"></td>
+            <td style="text-align:center"><input type="checkbox" name="other_soft_adv"></td>
+          </tr>
+        </table>
+      </div>
+
+      <p class="note">4.4 Авьяас чадвар, сонирхол</p>
+      <div class="table-section">
+        <table>
+          <tr><th>Төрөл</th><th>Гаргасан амжилтууд</th></tr>
+          <tr>
+            <td><input type="text" name="talent1_type" placeholder="Спорт, урлаг..."></td>
+            <td><input type="text" name="talent1_result"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="talent2_type"></td>
+            <td><input type="text" name="talent2_result"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ТАВ: Гавьяа шагнал -->
+    <div class="section">
+      <h2>Тав. Гавьяа шагнал</h2>
+      <p class="note">5.1 Улсын чанартай төмрөөн урлагдан болон цол, одон медаль, мэн гадаад орноос авсан шагналуудыг бичнэ үү</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Шагнагдсан он</th>
+            <th>Шагналын нэр</th>
+            <th>Хаана ажиллах хугацаанд шагнагдсан</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="award1_year" placeholder="2020"></td>
+            <td><input type="text" name="award1_name"></td>
+            <td><input type="text" name="award1_org"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="award2_year"></td>
+            <td><input type="text" name="award2_name"></td>
+            <td><input type="text" name="award2_org"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ЗУРГАА: Гэр бүлийн байдал -->
+    <div class="section">
+      <h2>Зургаа. Гэр бүлийн байдал</h2>
+      <p class="note">6.1 Зөвхөн ам бүлд байгаа хүмүүсийг бичнэ үү</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Овог нэр</th>
+            <th>Таны юу болох</th>
+            <th>Төрсөн он</th>
+            <th>Одоо эрхэлж буй ажил</th>
+            <th>Холбоо барих утас</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="fam1_name"></td>
+            <td><input type="text" name="fam1_relation" placeholder="Эхнэр/Нөхөр"></td>
+            <td><input type="text" name="fam1_birth" placeholder="1990"></td>
+            <td><input type="text" name="fam1_job"></td>
+            <td><input type="text" name="fam1_phone"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="fam2_name"></td>
+            <td><input type="text" name="fam2_relation" placeholder="Хүүхэд"></td>
+            <td><input type="text" name="fam2_birth"></td>
+            <td><input type="text" name="fam2_job"></td>
+            <td><input type="text" name="fam2_phone"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="fam3_name"></td>
+            <td><input type="text" name="fam3_relation"></td>
+            <td><input type="text" name="fam3_birth"></td>
+            <td><input type="text" name="fam3_job"></td>
+            <td><input type="text" name="fam3_phone"></td>
+          </tr>
+          <tr>
+            <td><input type="text" name="fam4_name"></td>
+            <td><input type="text" name="fam4_relation"></td>
+            <td><input type="text" name="fam4_birth"></td>
+            <td><input type="text" name="fam4_job"></td>
+            <td><input type="text" name="fam4_phone"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ДОЛОО: Харшил -->
+    <div class="section">
+      <h2>Долоо. Харшил</h2>
+      <p class="note">Танд дараах зүйлсэд харшил байгаа эсэхийг тэмдэглэнэ үү</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Харшлын төрөл</th>
+            <th>Харшил байгаа эсэх</th>
+            <th>Дэлгэрэнгүй (байвал)</th>
+          </tr>
+          <tr>
+            <td>Ургамал</td>
+            <td style="text-align:center">
+              <div class="radio-group" style="justify-content:center">
+                <label><input type="radio" name="allergy_plant" value="Тийм"> Тийм</label>
+                <label><input type="radio" name="allergy_plant" value="Үгүй" checked> Үгүй</label>
+              </div>
+            </td>
+            <td><input type="text" name="allergy_plant_detail" placeholder="Ямар ургамал..."></td>
+          </tr>
+          <tr>
+            <td>Тоос</td>
+            <td style="text-align:center">
+              <div class="radio-group" style="justify-content:center">
+                <label><input type="radio" name="allergy_dust" value="Тийм"> Тийм</label>
+                <label><input type="radio" name="allergy_dust" value="Үгүй" checked> Үгүй</label>
+              </div>
+            </td>
+            <td><input type="text" name="allergy_dust_detail" placeholder="Дэлгэрэнгүй..."></td>
+          </tr>
+          <tr>
+            <td>Химийн бодис</td>
+            <td style="text-align:center">
+              <div class="radio-group" style="justify-content:center">
+                <label><input type="radio" name="allergy_chemical" value="Тийм"> Тийм</label>
+                <label><input type="radio" name="allergy_chemical" value="Үгүй" checked> Үгүй</label>
+              </div>
+            </td>
+            <td><input type="text" name="allergy_chemical_detail" placeholder="Ямар бодис..."></td>
+          </tr>
+          <tr>
+            <td>Халуун</td>
+            <td style="text-align:center">
+              <div class="radio-group" style="justify-content:center">
+                <label><input type="radio" name="allergy_heat" value="Тийм"> Тийм</label>
+                <label><input type="radio" name="allergy_heat" value="Үгүй" checked> Үгүй</label>
+              </div>
+            </td>
+            <td><input type="text" name="allergy_heat_detail" placeholder="Дэлгэрэнгүй..."></td>
+          </tr>
+        </table>
+      </div>
+      <div class="field">
+        <label>Бусад харшил (байвал бичнэ үү)</label>
+        <input type="text" name="allergy_other" placeholder="Жишээ: сүү, буудайн гурил...">
+      </div>
+    </div>
+
+    <!-- НАЙМ: Бусад -->
+    <div class="section">
+      <h2>Найм. Бусад</h2>
+
+      <div class="field">
+        <label>7.1 Та ажлын байрны талаарх мэдээллийг ямар эх сурвалжаас авсан бэ?</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="source_website"> Компанийн сайт</label>
+          <label><input type="checkbox" name="source_zangia"> Зангиа</label>
+          <label><input type="checkbox" name="source_facebook"> Facebook</label>
+          <label><input type="checkbox" name="source_linkedin"> LinkedIn</label>
+          <label><input type="checkbox" name="source_other"> Бусад</label>
+        </div>
+      </div>
+
+      <p class="note">7.2 Таван Богд групп-д танил, найз, хамаатан садан ажилладаг эсэх</p>
+      <div class="table-section">
+        <table>
+          <tr>
+            <th>Таны юу болох</th>
+            <th>Овог нэр</th>
+            <th>Аль газар, нэгж</th>
+            <th>Албан тушаал</th>
+          </tr>
+          <tr>
+            <td><input type="text" name="ref1_relation"></td>
+            <td><input type="text" name="ref1_name"></td>
+            <td><input type="text" name="ref1_dept"></td>
+            <td><input type="text" name="ref1_title"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Өргөдөл илгээх</button>
+  </form>
+
+  <div class="hr-link">
+    <a href="/hr">HR хуудас руу орох →</a>
+  </div>
+</div>
+</body>
+</html>
